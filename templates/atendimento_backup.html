@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Atendimento - Sistema Apoio Assertiva{% endblock %}
+
+{% block content %}
+<style>
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .generator-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .card-body-custom {
+        padding: 2rem;
+    }
+
+    .form-control-custom {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-generate {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .response-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .response-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px 15px 0 0;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .response-content {
+        padding: 1.5rem;
+        font-size: 1rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .btn-copy {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-copy:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .examples-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .example-category {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        overflow: hidden;
+    }
+
+    .category-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .category-content {
+        padding: 1.5rem;
+    }
+
+    .example-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 0.75rem 0;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .example-btn:hover {
+        color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
+        padding-left: 0.5rem;
+    }
+
+    .loading-custom {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: #667eea;
+    }
+
+    .spinner-custom {
+        border: 3px solid rgba(102, 126, 234, 0.1);
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="main-container">
+    <div class="text-center mb-4">
+        <h2 style="color: #667eea; font-weight: 700;">🎯 Sistema de Apoio ao Atendimento</h2>
+        <p style="color: #6c757d; font-size: 1.1rem;">Gere respostas profissionais baseadas nos guias práticos da Assertiva</p>
+    </div>
+
+    <div class="generator-card">
+        <div class="card-header-custom">
+            <h5 class="mb-0">💬 Gerador de Respostas Profissionais</h5>
+        </div>
+        <div class="card-body-custom">
+            <div class="mb-4">
+                <label for="perguntaInput" class="form-label fw-bold" style="color: #495057;">Pergunta do Cliente:</label>
+                <textarea
+                    class="form-control form-control-custom"
+                    id="perguntaInput"
+                    rows="4"
+                    placeholder="Cole aqui a pergunta do cliente..."
+                ></textarea>
+                <div class="form-text mt-2">💡 Dica: Use Ctrl+Enter para enviar rapidamente</div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-generate" id="btnEnviar">
+                    🚀 Gerar Resposta Profissional
+                </button>
+            </div>
+
+            <div class="loading-custom" id="loading">
+                <div class="spinner-custom"></div>
+                <span>Gerando resposta baseada nos guias práticos da Assertiva...</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="respostasContainer">
+        <!-- Respostas aparecerão aqui -->
+    </div>
+
+    <!-- Exemplos de perguntas -->
+    <div class="text-center mb-3">
+        <h4 style="color: #667eea; font-weight: 600;">💡 Exemplos de Perguntas Frequentes</h4>
+        <p style="color: #6c757d;">Clique em qualquer exemplo para usar como base</p>
+    </div>
+
+    <div class="examples-grid">
+        <div class="example-category">
+            <div class="category-header">
+                💰 Financeiro
+            </div>
+            <div class="category-content">
+                <button class="example-btn" onclick="usarExemplo('Como gerar segunda via do boleto?')">
+                    • Como gerar segunda via do boleto?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como ajustar meus créditos e minha franquia?')">
+                    • Como ajustar meus créditos e minha franquia?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Onde vejo meus preços unitários?')">
+                    • Onde vejo meus preços unitários?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como acessar a área de pagamentos?')">
+                    • Como acessar a área de pagamentos?
+                </button>
+            </div>
+        </div>
+
+        <div class="example-category">
+            <div class="category-header">
+                👥 Usuários e Perfis
+            </div>
+            <div class="category-content">
+                <button class="example-btn" onclick="usarExemplo('Como criar perfil personalizado?')">
+                    • Como criar perfil personalizado?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Quais são os tipos de perfis personalizados?')">
+                    • Quais são os tipos de perfis personalizados?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como alterar horário de uso?')">
+                    • Como alterar horário de uso?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como alterar o e-mail de um usuário?')">
+                    • Como alterar o e-mail de um usuário?
+                </button>
+            </div>
+        </div>
+
+        <div class="example-category">
+            <div class="category-header">
+                🔧 Técnico e Configurações
+            </div>
+            <div class="category-content">
+                <button class="example-btn" onclick="usarExemplo('Como configurar acessos através da API?')">
+                    • Como configurar acessos através da API?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como fazer limpeza dos cookies do navegador?')">
+                    • Como fazer limpeza dos cookies do navegador?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como criar grupos de usuários?')">
+                    • Como criar grupos de usuários?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como limitar consumo de usuários?')">
+                    • Como limitar consumo de usuários?
+                </button>
+            </div>
+        </div>
+
+        <div class="example-category">
+            <div class="category-header">
+                📊 Relatórios e Consumo
+            </div>
+            <div class="category-content">
+                <button class="example-btn" onclick="usarExemplo('Como visualizar meu consumo?')">
+                    • Como visualizar meu consumo?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como utilizar a seção Minha Conta?')">
+                    • Como utilizar a seção Minha Conta?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('Como usar a Análise Inteligente de crédito?')">
+                    • Como usar a Análise Inteligente de crédito?
+                </button>
+                <button class="example-btn" onclick="usarExemplo('O que é o Crédito Mix 360?')">
+                    • O que é o Crédito Mix 360?
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+// Adicionar animações de fade-in
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar classe de animação aos elementos
+    const elements = document.querySelectorAll('.generator-card, .example-category');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.6s ease';
+
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+
+// Adicionar efeito de hover nos cards de exemplo
+document.querySelectorAll('.example-category').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+        this.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.2)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.1)';
+    });
+});
+</script>
+{% endblock %}

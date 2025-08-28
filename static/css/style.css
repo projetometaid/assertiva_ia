@@ -1,0 +1,477 @@
+body {
+    background: #f5f7fb;
+}
+
+.navbar-brand img {
+    filter: brightness(0) invert(1);
+}
+
+.chat-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.pergunta-box {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+}
+
+.resposta-box {
+    background-color: #f1f8e9;
+    border-left: 4px solid #4caf50;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.loading {
+    display: none;
+}
+
+.loading.show {
+    display: block;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===== SIDEBAR STYLES ===== */
+/* Reset de herança Bootstrap para sidebar */
+.sidebar,
+.sidebar *,
+.sidebar *::before,
+.sidebar *::after {
+    box-sizing: border-box;
+    font-family: inherit;
+    line-height: inherit;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    box-shadow: none;
+    color: white;
+    font-size: 16px;
+    line-height: 1.5;
+    isolation: isolate;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* Remover pseudo-elementos que possam vazar */
+.sidebar::before,
+.sidebar::after {
+    content: none;
+}
+
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Logo expandido quando histórico está aberto */
+.sidebar-logo.expanded {
+    width: 120px;
+    height: 40px;
+    padding: 8px 12px;
+}
+
+.sidebar-logo img {
+    width: 100%;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.sidebar-title {
+    color: white;
+    font-weight: 600;
+    margin-left: 10px;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-title {
+    opacity: 0;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar-nav {
+    padding-inline: 0px;
+    flex: 1;
+}
+
+.nav-item {
+    margin: 0.25rem 20px;
+}
+
+/* Container do link - usando Flexbox para controle total */
+.nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 10px;
+    margin: 0;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: background 0.3s ease, color 0.3s ease;
+    border-radius: 16px;
+    background: transparent;
+    border: none;
+    width: 100%; /* O padding do container pai já controla o espaçamento */
+    position: relative;
+    min-height: 56px;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    /* Removido transform para evitar deslocamento */
+}
+
+.nav-link.active {
+    background: rgba(255,255,255,.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,.10);
+    color: #fff;
+    border-radius: 16px;
+}
+
+/* Container do ícone - centralização com Grid */
+.sidebar .nav-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Reset completo para ícones Bootstrap e Lucide */
+.sidebar .nav-icon svg {
+    width: 28px !important;
+    height: 28px !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    vertical-align: baseline !important;
+    stroke-width: 1.8 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Texto do menu */
+.nav-text {
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    padding-left: 0;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Estado collapsed - ícones centralizados na área roxa */
+.sidebar.collapsed .sidebar-nav {
+    padding-inline: 0px;
+}
+
+.sidebar.collapsed .nav-item {
+    margin: 0.25rem 0;
+}
+
+.sidebar.collapsed .nav-link {
+    /* Centraliza o próprio "chip" horizontalmente */
+    margin: 0 auto;
+
+    /* Define um tamanho fixo quadrado para o "chip" */
+    width: 48px;
+    height: 48px;
+
+    /* Garante que o ícone DENTRO do chip fique perfeitamente centralizado */
+    justify-content: center;
+
+    /* Zera o padding para não interferir com as dimensões fixas */
+    padding: 0;
+    gap: 0;
+    border-radius: 16px;
+}
+
+.sidebar.collapsed .nav-text {
+    display: none;
+}
+
+.sidebar.collapsed .nav-icon {
+    width: 28px;
+    height: 28px;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: auto;
+}
+
+/* ===== SIDEBAR HISTÓRICO ===== */
+.history-sidebar {
+    position: fixed;
+    top: 0;
+    left: -350px; /* Escondida inicialmente */
+    width: 350px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.history-sidebar.show {
+    left: 0; /* Mostra a sidebar */
+}
+
+.history-sidebar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.history-sidebar-body {
+    padding: 1rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.history-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+}
+
+.history-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.history-title {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.history-time {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.close-sidebar:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.main-content {
+    margin-left: 290px; /* 280px sidebar + 10px gap */
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+    background: transparent;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+}
+
+.main-content.expanded {
+    margin-left: 80px; /* 70px sidebar + 10px gap */
+}
+
+.mobile-toggle {
+    display: none;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .mobile-toggle {
+        display: block;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 4px;
+    }
+}
+
+/* ===== CARDS E CONTAINERS ===== */
+/* Card branco principal que deve "flutuar" */
+.generator-card,
+.response-card {
+    position: relative;
+    isolation: isolate;
+    z-index: 1;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(18, 21, 26, .12);
+    width: 100%;
+    overflow: visible;
+    margin: 0;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.generator-card:last-child,
+.response-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Container de respostas */
+#respostasContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Evitar recortes acidentais */
+.main-content *,
+.generator-card *,
+.response-card * {
+    box-sizing: border-box;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+}
+

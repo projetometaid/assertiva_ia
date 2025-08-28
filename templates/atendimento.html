@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}Atendimento - Sistema Apoio Assertiva{% endblock %}
+
+{% block content %}
+<style>
+
+
+
+    .generator-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 1.5rem;
+        border: none;
+    }
+
+    .card-body-custom {
+        padding: 2rem;
+    }
+
+    .form-control-custom {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-generate {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .response-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .response-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .response-content {
+        padding: 1.5rem;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #495057;
+    }
+
+    .btn-copy {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-copy:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .copy-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .fade-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .spinner-border {
+        color: #667eea;
+    }
+
+    /* Estilos para mensagens */
+    #mensagemContainer .alert {
+        border-radius: 10px;
+        border: none;
+        font-weight: 500;
+        text-align: center;
+        margin-bottom: 0;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    #mensagemContainer .alert-danger {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    #mensagemContainer .alert-success {
+        background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
+    }
+
+    #mensagemContainer .alert-warning {
+        background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+        color: #333;
+        box-shadow: 0 4px 15px rgba(255, 212, 59, 0.3);
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+</style>
+
+<!-- Formulário de Pergunta -->
+            <!-- Formulário de Pergunta -->
+            <div class="generator-card">
+                <div class="card-header-custom">
+                    <h5 class="mb-0">Atendimento</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="mb-4">
+                        <label for="perguntaInput" class="form-label fw-bold" style="color: #495057;">Pergunta do Cliente:</label>
+                        <textarea
+                            class="form-control form-control-custom"
+                            id="perguntaInput"
+                            rows="4"
+                            placeholder="Cole aqui a pergunta do cliente..."
+                        ></textarea>
+                        <div class="form-text mt-2">Dica: Use Ctrl+Enter para enviar rapidamente</div>
+                    </div>
+
+                    <div class="text-center">
+                        <button
+                            type="button"
+                            class="btn btn-generate"
+                            id="botaoGerarResposta"
+                            onclick="executarGeracao()"
+                        >
+                            🚀 Gerar Resposta Profissional
+                        </button>
+                    </div>
+
+                    <!-- Área para mensagens -->
+                    <div class="mt-3" id="mensagemContainer" style="display: none;">
+                        <div class="alert" id="mensagemAlert" role="alert">
+                            <span id="mensagemTexto"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading-spinner" id="loading">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p class="mt-2 text-muted">Gerando resposta profissional...</p>
+            </div>
+
+<!-- Container de Respostas -->
+<div id="respostasContainer">
+    <!-- Respostas aparecerão aqui -->
+</div>
+
+<script>
+console.log('🚀 SCRIPT CARREGADO!');
+
+// Função para mostrar mensagens personalizadas
+function mostrarMensagem(texto, tipo = 'danger', duracao = 5000) {
+    const container = document.getElementById('mensagemContainer');
+    const alert = document.getElementById('mensagemAlert');
+    const textoElement = document.getElementById('mensagemTexto');
+
+    // Limpar classes anteriores
+    alert.className = 'alert';
+    alert.classList.add(`alert-${tipo}`);
+
+    // Definir texto
+    textoElement.textContent = texto;
+
+    // Mostrar container
+    container.style.display = 'block';
+
+    // Auto-ocultar após duração especificada
+    setTimeout(() => {
+        container.style.display = 'none';
+    }, duracao);
+}
+
+function executarGeracao() {
+    console.log('🎯 FUNÇÃO EXECUTADA!');
+
+    // Pegar pergunta
+    const pergunta = document.getElementById('perguntaInput').value.trim();
+
+    if (!pergunta) {
+        mostrarMensagem('❌ Digite uma pergunta primeiro!', 'warning');
+        return;
+    }
+
+    console.log('📝 Pergunta:', pergunta);
+
+    // Mostrar loading
+    const botao = document.getElementById('botaoGerarResposta');
+    botao.innerHTML = '⏳ Processando...';
+    botao.disabled = true;
+
+    // Fazer requisição
+    fetch('/gerar_resposta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pergunta: pergunta })
+    })
+    .then(response => {
+        console.log('📡 Resposta:', response.status);
+
+        // Verificar se a resposta é de erro de autenticação
+        if (response.status === 401) {
+            mostrarMensagem('🔒 Sua sessão expirou. Redirecionando para login...', 'warning');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+            throw new Error('Sessão expirada');
+        }
+
+        // Verificar se a resposta não é OK
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        console.log('✅ Dados:', data);
+
+        // Verificar se há erro na resposta
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        // Verificar se a resposta existe
+        if (!data.resposta) {
+            throw new Error('Resposta não encontrada nos dados retornados');
+        }
+
+        // Limpar formatação desnecessária da resposta
+        let respostaLimpa = data.resposta;
+
+        // Remover formatação de atendimento
+        respostaLimpa = respostaLimpa.replace(/📞.*?\*\*Atendimento Assertiva\*\*.*?\n/g, '');
+        respostaLimpa = respostaLimpa.replace(/\*\*Cliente:\*\*.*?\n/g, '');
+        respostaLimpa = respostaLimpa.replace(/\*\*Atendente:\*\*.*?"/g, '');
+        respostaLimpa = respostaLimpa.replace(/"/g, '');
+
+        // Remover quebras de linha extras
+        respostaLimpa = respostaLimpa.trim();
+
+        // Mostrar resposta limpa
+        document.getElementById('respostasContainer').innerHTML = `
+            <div class="response-card fade-in">
+                <div class="response-header">
+                    <h5 style="margin: 0;">📋 Resposta Limpa (Pronta para Copiar)</h5>
+                    <button class="btn-copy" onclick="copiarResposta()">
+                        📋 Copiar Texto
+                    </button>
+                </div>
+                <div class="response-content" id="respostaTexto">
+                    ${respostaLimpa.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+        `;
+
+        // Armazenar resposta limpa globalmente
+        window.respostaParaCopiar = respostaLimpa;
+
+        // Limpar campo
+        document.getElementById('perguntaInput').value = '';
+
+        // Mostrar mensagem de sucesso
+        mostrarMensagem('✅ Resposta gerada com sucesso!', 'success', 3000);
+
+        // Scroll para resultado
+        document.getElementById('respostasContainer').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(error => {
+        console.error('❌ Erro:', error);
+        mostrarMensagem('❌ Erro: ' + error.message, 'danger');
+    })
+    .finally(() => {
+        // Restaurar botão
+        botao.innerHTML = '🚀 Gerar Resposta Profissional';
+        botao.disabled = false;
+    });
+}
+
+// Função para copiar resposta
+function copiarResposta() {
+    if (window.respostaParaCopiar) {
+        navigator.clipboard.writeText(window.respostaParaCopiar).then(() => {
+            // Feedback visual
+            const botaoCopiar = document.querySelector('.btn-copy');
+            const textoOriginal = botaoCopiar.innerHTML;
+            botaoCopiar.innerHTML = '✅ Copiado!';
+            botaoCopiar.style.background = 'rgba(40, 167, 69, 0.8)';
+
+            setTimeout(() => {
+                botaoCopiar.innerHTML = textoOriginal;
+                botaoCopiar.style.background = 'rgba(255, 255, 255, 0.2)';
+            }, 2000);
+        }).catch(err => {
+            console.error('Erro ao copiar:', err);
+            mostrarMensagem('❌ Erro ao copiar texto', 'danger');
+        });
+    }
+}
+
+// Suporte ao Ctrl+Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('perguntaInput');
+    if (textarea) {
+        textarea.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                executarGeracao();
+            }
+        });
+    }
+});
+
+console.log('✅ Sistema pronto com funcionalidades avançadas!');
+</script>
+{% endblock %}

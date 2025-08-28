@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Sistema Apoio Assertiva{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h2 class="mb-4">⚙️ Painel Administrativo</h2>
+        
+        <div class="alert alert-warning">
+            <h6>🚧 Em Desenvolvimento</h6>
+            <p class="mb-0">Este painel será implementado na Fase 2 do projeto. Funcionalidades planejadas:</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">👥 Gestão de Usuários</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Gerenciar usuários do sistema:</p>
+                        <ul>
+                            <li>Listar usuários ativos</li>
+                            <li>Enviar convites por email</li>
+                            <li>Definir permissões</li>
+                            <li>Desativar/ativar contas</li>
+                        </ul>
+                        <button class="btn btn-outline-primary" disabled>Em breve</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📊 Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Relatórios de uso:</p>
+                        <ul>
+                            <li>Perguntas mais frequentes</li>
+                            <li>Usuários mais ativos</li>
+                            <li>Tempo de resposta médio</li>
+                            <li>Taxa de satisfação</li>
+                        </ul>
+                        <button class="btn btn-outline-primary" disabled>Em breve</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🔧 Configurações</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Configurações do sistema:</p>
+                        <ul>
+                            <li>Atualizar guias práticos</li>
+                            <li>Configurar API OpenAI</li>
+                            <li>Backup de dados</li>
+                            <li>Logs de sistema</li>
+                        </ul>
+                        <button class="btn btn-outline-primary" disabled>Em breve</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🔒 Segurança</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Controle de segurança:</p>
+                        <ul>
+                            <li>Logs de acesso</li>
+                            <li>Tentativas de login</li>
+                            <li>Sessões ativas</li>
+                            <li>Auditoria de ações</li>
+                        </ul>
+                        <button class="btn btn-outline-primary" disabled>Em breve</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">🚀 Roadmap de Desenvolvimento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>✅ Fase 1 - MVP (Atual)</h6>
+                        <ul>
+                            <li>Sistema de apoio básico</li>
+                            <li>Interface web</li>
+                            <li>Geração de respostas</li>
+                            <li>Deploy na AWS</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>🔄 Fase 2 - Autenticação</h6>
+                        <ul>
+                            <li>Sistema de login</li>
+                            <li>Convites por email</li>
+                            <li>Controle de acesso</li>
+                            <li>Criptografia</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>⏳ Fase 3 - Admin Completo</h6>
+                        <ul>
+                            <li>Painel administrativo</li>
+                            <li>Analytics avançados</li>
+                            <li>Gestão de usuários</li>
+                            <li>Relatórios</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-4">
+            <h6>💡 Informações Técnicas</h6>
+            <p><strong>Versão atual:</strong> 1.0.0 (MVP)</p>
+            <p><strong>Última atualização:</strong> {{ moment().format('DD/MM/YYYY') }}</p>
+            <p><strong>Status:</strong> <span class="badge bg-success">Operacional</span></p>
+            <p class="mb-0"><strong>Próxima release:</strong> Fase 2 - Sistema de autenticação</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
