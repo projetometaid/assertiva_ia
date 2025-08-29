@@ -1,163 +1,192 @@
-// Sistema de Apoio ao Atendimento - JavaScript
+/* app.js - JavaScript global do Sistema Assertiva */
 
-class SistemaAtendimento {
-    constructor() {
-        this.initEventListeners();
-    }
+// === SIDEBAR TOGGLE ===
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
 
-    initEventListeners() {
-        // Botão de enviar pergunta
-        const btnEnviar = document.getElementById('btnEnviar');
-        if (btnEnviar) {
-            btnEnviar.addEventListener('click', () => this.enviarPergunta());
-        }
+    if (sidebar && mainContent) {
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
 
-        // Enter no textarea
-        const perguntaInput = document.getElementById('perguntaInput');
-        if (perguntaInput) {
-            perguntaInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && e.ctrlKey) {
-                    this.enviarPergunta();
-                }
-            });
+        // Para mobile
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('show');
         }
     }
+}
 
-    async enviarPergunta() {
-        const perguntaInput = document.getElementById('perguntaInput');
-        const pergunta = perguntaInput.value.trim();
+// Auto-hide sidebar on mobile when clicking outside
+document.addEventListener('click', function(event) {
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const mobileToggle = document.querySelector('.mobile-toggle');
 
-        if (!pergunta) {
-            alert('Digite uma pergunta válida');
-            return;
+        if (sidebar && mobileToggle && 
+            !sidebar.contains(event.target) && 
+            !mobileToggle.contains(event.target)) {
+            sidebar.classList.remove('show');
+        }
+    }
+});
+
+// === LOGOUT FUNCTION ===
+function fazerLogout() {
+    console.log('🚪 Iniciando logout...');
+
+    if (confirm('Tem certeza que deseja sair?')) {
+        // Feedback visual imediato
+        const logoutLink = document.querySelector('.logout-link');
+        if (logoutLink) {
+            logoutLink.innerHTML = '<div class="nav-icon">⏳</div><span class="nav-text">Saindo...</span>';
+            logoutLink.style.pointerEvents = 'none';
         }
 
-        this.mostrarLoading(true);
+        // Desabilitar temporariamente os scripts de segurança
+        window.logoutInProgress = true;
 
-        try {
-            const response = await fetch('/gerar_resposta', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ pergunta: pergunta })
-            });
+        // Limpar dados do navegador imediatamente
+        if (typeof(Storage) !== "undefined") {
+            localStorage.clear();
+            sessionStorage.clear();
+        }
 
-            const data = await response.json();
-
-            if (response.ok) {
-                this.exibirResposta(pergunta, data.resposta);
-                perguntaInput.value = '';
-            } else {
-                alert('Erro: ' + data.erro);
+        // Fazer logout via POST
+        console.log('🌐 Fazendo logout via POST...');
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             }
-        } catch (error) {
-            alert('Erro de conexão: ' + error.message);
-        } finally {
-            this.mostrarLoading(false);
-        }
-    }
-
-    exibirResposta(pergunta, resposta) {
-        const container = document.getElementById('respostasContainer');
-
-        // Limpar formatação de conversa da resposta
-        let respostaLimpa = resposta;
-
-        // Remover saudações e formatação de conversa
-        respostaLimpa = respostaLimpa.replace(/^(Olá[^!]*!?\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Oi[^!]*!?\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Bom dia[^!]*!?\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Boa tarde[^!]*!?\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Boa noite[^!]*!?\s*)/i, '');
-
-        // Remover padrões de resposta conversacional
-        respostaLimpa = respostaLimpa.replace(/^(Resposta:\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Aqui está a resposta:\s*)/i, '');
-        respostaLimpa = respostaLimpa.replace(/^(Segue a resposta:\s*)/i, '');
-
-        // Remover fechamentos conversacionais
-        respostaLimpa = respostaLimpa.replace(/\s*(Espero ter ajudado[^.]*\.?\s*)$/i, '');
-        respostaLimpa = respostaLimpa.replace(/\s*(Qualquer dúvida[^.]*\.?\s*)$/i, '');
-        respostaLimpa = respostaLimpa.replace(/\s*(Estou à disposição[^.]*\.?\s*)$/i, '');
-
-        // Limpar espaços extras
-        respostaLimpa = respostaLimpa.trim();
-
-        const timestamp = new Date().toLocaleString('pt-BR');
-
-        const respostaHtml = `
-            <div class="response-card fade-in">
-                <div class="response-header">
-                    <div>
-                        <strong>📝 Resposta Gerada</strong>
-                        <small class="d-block opacity-75">${timestamp}</small>
-                    </div>
-                    <button class="btn-copy" onclick="copiarResposta(this)">
-                        📋 Copiar Tudo
-                    </button>
-                </div>
-                <div class="response-content">${respostaLimpa.replace(/\n/g, '<br>')}</div>
-            </div>
-        `;
-
-        container.innerHTML = respostaHtml + container.innerHTML;
-    }
-
-    mostrarLoading(show) {
-        const loading = document.getElementById('loading');
-        const btnEnviar = document.getElementById('btnEnviar');
-
-        if (loading) {
-            loading.style.display = show ? 'block' : 'none';
-        }
-
-        if (btnEnviar) {
-            btnEnviar.disabled = show;
-            btnEnviar.innerHTML = show ?
-                '<div class="spinner-border spinner-border-sm me-2"></div>Processando...' :
-                '🚀 Gerar Resposta Profissional';
-        }
-    }
-}
-
-// Função global para copiar resposta completa
-function copiarResposta(btn) {
-    const responseCard = btn.closest('.response-card');
-    const respostaContent = responseCard.querySelector('.response-content');
-    const texto = respostaContent.textContent.trim();
-
-    navigator.clipboard.writeText(texto).then(() => {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✅ Copiado!';
-        btn.style.background = 'rgba(40, 167, 69, 0.3)';
-
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = 'rgba(255, 255, 255, 0.2)';
-        }, 2000);
-    }).catch(err => {
-        console.error('Erro ao copiar:', err);
-        alert('Erro ao copiar texto');
-    });
-}
-
-// Função para usar exemplo
-function usarExemplo(pergunta) {
-    const perguntaInput = document.getElementById('perguntaInput');
-    if (perguntaInput) {
-        perguntaInput.value = pergunta;
-        perguntaInput.focus();
-
-        // Scroll suave para o campo de pergunta
-        perguntaInput.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
+        }).then(() => {
+            console.log('✅ Logout realizado, redirecionando...');
+            window.location.href = '/login';
+        }).catch(() => {
+            console.log('⚠️ Erro no logout, redirecionando mesmo assim...');
+            window.location.href = '/login';
         });
     }
 }
 
-// Inicializar quando a página carregar
-document.addEventListener('DOMContentLoaded', () => {
-    new SistemaAtendimento();
+// === SECURITY SCRIPTS ===
+// Detectar quando a página é carregada do cache (botão voltar)
+window.addEventListener('pageshow', function(event) {
+    // Não interferir se logout está em progresso
+    if (window.logoutInProgress) return;
+
+    if (event.persisted) {
+        // Página foi carregada do cache - forçar reload
+        window.location.reload();
+    }
 });
+
+// Detectar navegação pelo histórico
+window.addEventListener('popstate', function() {
+    // Não interferir se logout está em progresso
+    if (window.logoutInProgress) return;
+
+    // Verificar se ainda está autenticado fazendo uma requisição
+    fetch('/', {
+        method: 'GET',
+        cache: 'no-cache',
+        headers: {
+            'Cache-Control': 'no-cache'
+        }
+    }).then(response => {
+        if (response.redirected && response.url.includes('/login')) {
+            // Não está mais autenticado - redirecionar
+            window.location.href = '/login';
+        }
+    }).catch(() => {
+        // Erro - redirecionar para login
+        window.location.href = '/login';
+    });
+});
+
+// Prevenir cache da página
+if (window.history && window.history.pushState) {
+    window.addEventListener('beforeunload', function() {
+        // Limpar cache ao sair da página
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                names.forEach(function(name) {
+                    caches.delete(name);
+                });
+            });
+        }
+    });
+}
+
+// === INICIALIZAÇÃO ===
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Sistema Assertiva carregado');
+
+    // Toggle sidebar (se já não tiver)
+    const btn = document.getElementById("sidebarToggle");
+    const sidebar = document.getElementById("sidebar");
+    if (btn && sidebar) {
+        btn.addEventListener("click", () => sidebar.classList.toggle("collapsed"));
+    }
+
+    // Init Lucide - removido para evitar conflito com base.html
+    // A inicialização do Lucide agora é feita apenas no base.html
+
+    // Debug dos ícones
+    console.log('🔍 DEBUG: Verificando ícones Lucide...');
+
+    // Verificar ícones na página
+    const icons = document.querySelectorAll('i[data-lucide]');
+    console.log('🔍 Ícones Lucide encontrados:', icons.length);
+
+    icons.forEach((icon, index) => {
+        console.log(`🔍 Ícone ${index + 1}:`, icon.getAttribute('data-lucide'), 'Elemento:', icon.tagName);
+    });
+
+    // Configurar logout link se existir
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        console.log('✅ Botão logout encontrado e configurado');
+    } else {
+        console.log('ℹ️ Botão logout não encontrado (normal em páginas públicas)');
+    }
+});
+
+// === UTILITY FUNCTIONS ===
+// Função para mostrar mensagens
+function mostrarMensagem(texto, tipo = 'info', duracao = 5000) {
+    // Criar elemento de alerta
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${texto}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Inserir no topo da página
+    const mainContent = document.querySelector('.content-inner') || document.querySelector('main');
+    if (mainContent) {
+        mainContent.insertBefore(alertDiv, mainContent.firstChild);
+    }
+
+    // Auto-remover após duração especificada
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, duracao);
+}
+
+// Função para loading spinner
+function showLoading(element, text = 'Carregando...') {
+    if (element) {
+        element.disabled = true;
+        element.innerHTML = `<i class="spinner-border spinner-border-sm me-2" role="status"></i>${text}`;
+    }
+}
+
+function hideLoading(element, originalText) {
+    if (element) {
+        element.disabled = false;
+        element.innerHTML = originalText;
+    }
+}

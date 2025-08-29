@@ -3,239 +3,38 @@
 {% block title %}Atendimento - Sistema Apoio Assertiva{% endblock %}
 
 {% block content %}
-<style>
-
-
-
-    .generator-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        margin-bottom: 2rem;
-    }
-
-    .card-header-custom {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 15px 15px 0 0;
-        padding: 1.5rem;
-        border: none;
-    }
-
-    .card-body-custom {
-        padding: 2rem;
-    }
-
-    .form-control-custom {
-        border: 2px solid #e9ecef;
-        border-radius: 10px;
-        padding: 1rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-control-custom:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .btn-generate {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        color: white;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-generate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-
-    .response-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-
-    .response-header {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .response-content {
-        padding: 1.5rem;
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #495057;
-    }
-
-    .btn-copy {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-copy:hover {
-        background: rgba(255, 255, 255, 0.3);
-        color: white;
-        transform: translateY(-1px);
-    }
-
-    .copy-icon {
-        width: 16px;
-        height: 16px;
-    }
-
-    .fade-in {
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .loading-spinner {
-        display: none;
-        text-align: center;
-        padding: 2rem;
-    }
-
-    .spinner-border {
-        color: #667eea;
-    }
-
-    /* Estilos para mensagens */
-    #mensagemContainer .alert {
-        border-radius: 10px;
-        border: none;
-        font-weight: 500;
-        text-align: center;
-        margin-bottom: 0;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    #mensagemContainer .alert-danger {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    }
-
-    #mensagemContainer .alert-success {
-        background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
-    }
-
-    #mensagemContainer .alert-warning {
-        background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
-        color: #333;
-        box-shadow: 0 4px 15px rgba(255, 212, 59, 0.3);
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Animação para ícone de loading */
-    [data-lucide="loader-2"] {
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-</style>
-
-<!-- Formulário de Pergunta -->
-            <!-- Formulário de Pergunta -->
-            <div class="generator-card">
-                <div class="card-header-custom">
-                    <h5 class="mb-0">Atendimento</h5>
-                </div>
-                <div class="card-body-custom">
-                    <div class="mb-4">
-                        <label for="perguntaInput" class="form-label fw-bold" style="color: #495057;">Pergunta do Cliente:</label>
-                        <textarea
-                            class="form-control form-control-custom"
-                            id="perguntaInput"
-                            rows="4"
-                            placeholder="Cole aqui a pergunta do cliente..."
-                        ></textarea>
-                        <div class="form-text mt-2">Dica: Use Ctrl+Enter para enviar rapidamente</div>
-                    </div>
-
-                    <div class="text-center">
-                        <button
-                            type="button"
-                            class="btn btn-generate"
-                            id="botaoGerarResposta"
-                            onclick="executarGeracao()"
-                        >
-                            <i data-lucide="send"></i> Gerar Resposta
-                        </button>
-                    </div>
-
-                    <!-- Área para mensagens -->
-                    <div class="mt-3" id="mensagemContainer" style="display: none;">
-                        <div class="alert" id="mensagemAlert" role="alert">
-                            <span id="mensagemTexto"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Loading -->
-            <div class="loading-spinner" id="loading">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Carregando...</span>
-                </div>
-                <p class="mt-2 text-muted">Gerando resposta profissional...</p>
-            </div>
-
-<!-- Container de Respostas -->
-<div id="respostasContainer">
-    <!-- Respostas aparecerão aqui -->
+<div class="ui-card">
+  <div class="ui-card__header">Atendimento</div>
+  <div class="ui-card__body">
+    <label class="ui-label" for="perguntaInput">Pergunta do Cliente:</label>
+    <textarea class="ui-input" id="perguntaInput" rows="4" placeholder="Cole aqui a pergunta do cliente..."></textarea>
+    <small class="u-text-muted">Dica: Use Ctrl+Enter para enviar rapidamente</small>
+    <div class="ui-actions">
+      <button type="button" class="ui-btn ui-btn--primary" id="botaoGerarResposta" onclick="executarGeracao()">
+        <i data-lucide="send" class="lucide-icon"></i>
+        <i class="fas fa-paper-plane fallback-icon" style="display: none;"></i>
+        Gerar Resposta
+      </button>
+    </div>
+    <div id="mensagemContainer" style="display:none;">
+      <div class="alert alert-danger" id="mensagemAlert" role="alert">
+        <span id="mensagemTexto"></span>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Loading -->
+<div id="loading" style="display:none;">
+  <div class="alert alert-success">Processando...</div>
+</div>
+
+<!-- Respostas -->
+<div id="respostasContainer"></div>
+
+{% endblock %}
+
+{% block extra_scripts %}
 
 <script>
 console.log('🚀 SCRIPT CARREGADO!');
@@ -279,8 +78,8 @@ function executarGeracao() {
     const botao = document.getElementById('botaoGerarResposta');
     botao.innerHTML = '<i data-lucide="loader-2"></i> Processando...';
     // Reinicializar ícones Lucide
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
+    if (typeof initLucideIcons === 'function') {
+        initLucideIcons();
     }
     botao.disabled = true;
 
@@ -361,8 +160,8 @@ function executarGeracao() {
         document.getElementById('respostasContainer').scrollIntoView({ behavior: 'smooth' });
 
         // Reinicializar ícones Lucide
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+        if (typeof initLucideIcons === 'function') {
+            initLucideIcons();
         }
     })
     .catch(error => {
@@ -373,8 +172,8 @@ function executarGeracao() {
         // Restaurar botão
         botao.innerHTML = '<i data-lucide="send"></i> Gerar Resposta';
         // Reinicializar ícones Lucide
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+        if (typeof initLucideIcons === 'function') {
+            initLucideIcons();
         }
         botao.disabled = false;
     });
@@ -394,8 +193,8 @@ function copiarResposta() {
                 botaoCopiar.innerHTML = '<i data-lucide="copy"></i>';
                 botaoCopiar.style.background = 'rgba(255, 255, 255, 0.2)';
                 // Reinicializar ícones Lucide
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
+                if (typeof initLucideIcons === 'function') {
+                    initLucideIcons();
                 }
             }, 2000);
         }).catch(err => {

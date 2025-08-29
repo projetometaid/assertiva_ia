@@ -1,0 +1,68 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <!-- Header -->
+    <div class="sidebar-header">
+        <div class="d-flex align-items-center">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='assets/logos/logo _assertiva.png') }}" alt="Assertiva" />
+            </div>
+            <span class="sidebar-title">Assertiva</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Collapse Sidebar">
+            <i data-lucide="chevron-left" class="lucide-icon"></i>
+            <i class="fas fa-chevron-left fallback-icon" style="display: none;"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" role="navigation">
+        <div class="nav-item">
+            <a href="{{ url_for('web.atendimento') }}" class="nav-link {{ 'active' if request.endpoint == 'web.atendimento' }}">
+                <div class="nav-icon">
+                    <i data-lucide="messages-square" class="lucide-icon"></i>
+                    <i class="fas fa-comments fallback-icon" style="display: none;"></i>
+                </div>
+                <span class="nav-text">Atendimento</span>
+            </a>
+        </div>
+
+        {% if user and user.role == 'admin' %}
+        <div class="nav-item">
+            <a href="{{ url_for('web.configuracoes') }}" class="nav-link {{ 'active' if request.endpoint == 'web.configuracoes' }}">
+                <div class="nav-icon">
+                    <i data-lucide="settings" class="lucide-icon"></i>
+                    <i class="fas fa-cog fallback-icon" style="display: none;"></i>
+                </div>
+                <span class="nav-text">Configurações</span>
+            </a>
+        </div>
+        {% endif %}
+    </nav>
+
+    <!-- Footer with Logout -->
+    <div class="sidebar-footer">
+        {% if user %}
+            <div class="nav-item">
+                <a href="#" class="nav-link logout-link" onclick="fazerLogout()"
+                   style="cursor: pointer; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 8px; transition: all 0.3s ease;"
+                   onmouseover="this.style.background='rgba(255,0,0,0.2)'"
+                   onmouseout="this.style.background='rgba(255,0,0,0.1)'">
+                    <div class="nav-icon">
+                        <i data-lucide="log-out" class="lucide-icon"></i>
+                        <i class="fas fa-sign-out-alt fallback-icon" style="display: none;"></i>
+                    </div>
+                    <span class="nav-text">Sair</span>
+                </a>
+            </div>
+        {% else %}
+            <div class="nav-item">
+                <div class="nav-link" style="opacity: 0.7;">
+                    <div class="nav-icon">
+                        <i data-lucide="home"></i>
+                    </div>
+                    <span class="nav-text">Versão Local</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

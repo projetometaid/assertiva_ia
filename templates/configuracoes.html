@@ -3,335 +3,133 @@
 {% block title %}Configurações - Sistema Assertiva{% endblock %}
 
 {% block content %}
-<style>
-    /* Variáveis CSS para padronização */
-    :root {
-        --brand-start: #667eea;
-        --brand-end: #764ba2;
-        --brand-bg: #f5f7fb;
-    }
-
-    /* CSS atualizado - versão 2.0 */
-    .generator-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        margin-bottom: 2rem;
-    }
-
-    .card-header-custom {
-        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%) !important;
-        color: white;
-        border-radius: 15px 15px 0 0;
-        padding: 1.5rem;
-        border: none;
-    }
-
-    .card-body-custom {
-        padding: 2rem;
-    }
-
-    .form-control-custom {
-        border: 2px solid #e9ecef;
-        border-radius: 10px;
-        padding: 1rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-control-custom:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .btn-generate {
-        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%);
-        border: none;
-        border-radius: 10px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        color: white;
-        transition: all 0.3s ease;
-    }
-
-    .btn-generate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        color: white;
-    }
-
-    .btn-copy {
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-copy:hover {
-        background: rgba(255, 255, 255, 0.3);
-        color: white;
-        transform: translateY(-1px);
-    }
-
-    .response-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.1);
-        border: 1px solid rgba(40, 167, 69, 0.1);
-        margin-top: 1.5rem;
-        overflow: hidden;
-    }
-
-    .response-header {
-        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%) !important;
-        color: white;
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .response-content {
-        padding: 1.5rem;
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #495057;
-    }
-
-
-
-    .step-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border-left: 4px solid var(--brand-start);
-    }
-
-    .step-number {
-        width: 28px;
-        height: 28px;
-        background: var(--brand-start);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.875rem;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-
-    .step-content {
-        flex: 1;
-    }
-
-
-
-
-
-
-
-    /* Animação para ícone de loading */
-    [data-lucide="loader-2"] {
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    /* Garantir espaçamento adequado entre cards */
-    .generator-card {
-        margin-bottom: 3rem !important;
-    }
-
-    /* Garantir que o último card tenha espaço suficiente */
-    .generator-card:last-child {
-        margin-bottom: 4rem !important;
-    }
-</style>
-
 <!-- Gestão de Usuários -->
-<div class="generator-card">
-    <div class="card-header-custom">
-        <h5 class="mb-0">Gestão de Usuários</h5>
-    </div>
-    <div class="card-body-custom">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <p class="mb-0">Gerencie usuários do sistema</p>
-            <button class="btn btn-generate" onclick="loadUsers()">
-                <i data-lucide="users"></i> Ver Usuários
-            </button>
-        </div>
+<div class="ui-card">
+  <div class="ui-card__header">Gestão de Usuários
+    <button class="ui-btn ui-btn--primary ui-btn--sm" style="float:right; margin-left: 10px;" onclick="loadUsers();">
+      <i data-lucide="users" class="lucide-icon"></i>
+      <i class="fas fa-users fallback-icon" style="display: none;"></i>
+      Ver Usuários
+    </button>
+    <button class="ui-btn ui-btn--secondary ui-btn--sm" style="float:right" onclick="testeSimples();">
+      <i data-lucide="test-tube" class="lucide-icon"></i>
+      <i class="fas fa-flask fallback-icon" style="display: none;"></i>
+      Teste Simples
+    </button>
+  </div>
+  <div class="ui-card__body">
+    <p class="u-text-muted">Gerencie usuários do sistema</p>
 
-        <!-- Lista de usuários -->
-        <div id="usersList" style="display: none;">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Nome</th>
-                            <th>Perfil</th>
-                            <th>Criado em</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Usuários serão carregados aqui -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Loading -->
-        <div id="usersLoading" style="display: none;" class="text-center">
-            <i data-lucide="loader-2"></i> Carregando usuários...
-        </div>
+    <div id="usersList" style="display:none;">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Email</th><th>Nome</th><th>Perfil</th><th>Criado em</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+      </div>
     </div>
+
+    <div id="usersLoading" style="display:none;" class="text-center">
+      <i data-lucide="loader-2"></i> Carregando usuários...
+    </div>
+  </div>
 </div>
 
 <!-- Formulário de Convite -->
-<div class="generator-card">
-    <div class="card-header-custom">
-        <h5 class="mb-0">Convidar Novo Usuário</h5>
-    </div>
-    <div class="card-body-custom">
-        <form id="formConvite">
-            <div class="mb-4">
-                <label for="emailUsuario" class="form-label fw-bold" style="color: #495057;">Email do usuário:</label>
-                <input
-                    type="email"
-                    class="form-control form-control-custom"
-                    id="emailUsuario"
-                    placeholder="usuario@exemplo.com"
-                    required
-                >
-                <div class="form-text mt-2">O usuário receberá um link para definir sua senha</div>
-            </div>
+<div class="ui-card">
+  <div class="ui-card__header">Convidar Novo Usuário</div>
+  <div class="ui-card__body">
+    <form id="formConvite">
+      <label class="ui-label" for="emailUsuario">Email do usuário:</label>
+      <input class="ui-input" type="email" id="emailUsuario" placeholder="usuario@exemplo.com" required>
+      <small class="u-text-muted">O usuário receberá um link para definir sua senha</small>
+      <div class="ui-actions">
+        <button type="submit" class="ui-btn ui-btn--primary" id="btnGerarConvite">
+          <i data-lucide="user-plus"></i> Gerar Link de Convite
+        </button>
+      </div>
+    </form>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-generate" id="btnGerarConvite">
-                    <i data-lucide="user-plus"></i> Gerar Link de Convite
-                </button>
-            </div>
-        </form>
-
-        <!-- Área de mensagens -->
-        <div class="mt-3" id="mensagemContainer" style="display: none;">
-            <div class="alert" id="mensagemAlert" role="alert">
-                <span id="mensagemTexto"></span>
-            </div>
-        </div>
+    <div class="mt-3" id="mensagemContainer" style="display:none;">
+      <div class="alert alert-danger" id="mensagemAlert" role="alert">
+        <span id="mensagemTexto"></span>
+      </div>
     </div>
+  </div>
 </div>
 
+
 <!-- Área de resultado do convite -->
-<div id="resultadoConvite" style="display: none;">
-    <div class="response-card fade-in">
-        <div class="response-header">
-            <button class="btn-copy" onclick="copiarLink()" style="margin-right: auto;">
-                <i data-lucide="copy"></i>
-            </button>
-        </div>
-        <div class="response-content">
-            <div class="mb-3">
-                <strong>Email:</strong> <span id="emailGerado" style="color: #667eea;"></span><br>
-                <strong>Expira em:</strong> <span id="expiraEm" style="color: #28a745;"></span>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-bold">Link do convite:</label>
-                <div class="input-group">
-                    <input
-                        type="text"
-                        class="form-control form-control-custom"
-                        id="linkConvite"
-                        readonly
-                        style="background-color: #f8f9fa;"
-                    >
-                </div>
-            </div>
-
-            <div class="d-flex gap-2 justify-content-center">
-                <a href="#" id="linkAbrirConvite" target="_blank" class="btn btn-generate btn-sm">
-                    <i data-lucide="external-link"></i>
-                    Abrir Link
-                </a>
-                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnNovoConvite">
-                    <i data-lucide="plus"></i>
-                    Novo Convite
-                </button>
-            </div>
-        </div>
+<div id="resultadoConvite" style="display:none;">
+  <div class="card">
+    <div class="card-header d-flex justify-content-end">
+      <button class="btn btn-outline btn-sm" onclick="copiarLink()" style="margin-left:auto;">
+        <i data-lucide="copy"></i>
+      </button>
     </div>
+    <div class="card-body">
+      <div class="mb-3">
+        <strong>Email:</strong> <span id="emailGerado" class="text-primary"></span><br>
+        <strong>Expira em:</strong> <span id="expiraEm" class="text-success"></span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Link do convite</label>
+        <input type="text" class="input" id="linkConvite" readonly>
+      </div>
+      <div class="d-flex gap-2 justify-content-center">
+        <a href="#" id="linkAbrirConvite" target="_blank" class="btn btn-primary">
+          <i data-lucide="external-link"></i> Abrir Link
+        </a>
+        <button type="button" class="btn btn-outline" id="btnNovoConvite">
+          <i data-lucide="plus"></i> Novo Convite
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Card de Informações -->
-<div class="generator-card">
-    <div class="card-header-custom">
-        <h5 class="mb-0">Como Funciona</h5>
+<div class="card">
+  <div class="card-header">Como Funciona</div>
+  <div class="card-body">
+    <div class="d-flex flex-column gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="badge-num">01</div>
+        <div>
+          <strong>Digite o email</strong><br>
+          <small class="text-muted">Informe o email do novo usuário</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="badge-num">02</div>
+        <div>
+          <strong>Gere o link</strong><br>
+          <small class="text-muted">Clique em "Gerar Link de Convite"</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="badge-num">03</div>
+        <div>
+          <strong>Compartilhe</strong><br>
+          <small class="text-muted">Envie o link para o usuário</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="badge-num">04</div>
+        <div>
+          <strong>Usuário define senha</strong><br>
+          <small class="text-muted">O usuário acessa o link e cria sua senha</small>
+        </div>
+      </div>
     </div>
-    <div class="card-body-custom">
-        <div class="step-item">
-            <div class="step-number">1</div>
-            <div class="step-content">
-                <strong>Digite o email</strong><br>
-                <small class="text-muted">Informe o email do novo usuário</small>
-            </div>
-        </div>
-
-        <div class="step-item">
-            <div class="step-number">2</div>
-            <div class="step-content">
-                <strong>Gere o link</strong><br>
-                <small class="text-muted">Clique em "Gerar Link de Convite"</small>
-            </div>
-        </div>
-
-        <div class="step-item">
-            <div class="step-number">3</div>
-            <div class="step-content">
-                <strong>Compartilhe</strong><br>
-                <small class="text-muted">Envie o link para o usuário</small>
-            </div>
-        </div>
-
-        <div class="step-item">
-            <div class="step-number">4</div>
-            <div class="step-content">
-                <strong>Usuário define senha</strong><br>
-                <small class="text-muted">O usuário acessa o link e cria sua senha</small>
-            </div>
-        </div>
-
-        <div class="step-item">
-            <div class="step-number"><i data-lucide="shield" style="width: 16px; height: 16px;"></i></div>
-            <div class="step-content">
-                <strong>Características de Segurança</strong><br>
-                <small class="text-muted">
-                    • Links expiram em 30 minutos<br>
-                    • Cada link só pode ser usado uma vez<br>
-                    • Senhas são criptografadas<br>
-                    • Validação rigorosa de tokens
-                </small>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
+</div>
 
 
 <script>
@@ -366,8 +164,8 @@ function executarGeracao() {
     // Mostrar loading
     const botao = document.getElementById('btnGerarConvite');
     botao.innerHTML = '<i data-lucide="loader-2"></i> Gerando...';
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
+    if (typeof initLucideIcons === 'function') {
+        initLucideIcons();
     }
     botao.disabled = true;
 
@@ -410,8 +208,8 @@ function executarGeracao() {
             document.getElementById('resultadoConvite').scrollIntoView({ behavior: 'smooth' });
 
             // Reinicializar ícones Lucide
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+            if (typeof initLucideIcons === 'function') {
+                initLucideIcons();
             }
 
             // Limpar formulário
@@ -431,8 +229,8 @@ function executarGeracao() {
         botao.disabled = false;
 
         // Reinicializar ícones Lucide
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+        if (typeof initLucideIcons === 'function') {
+            initLucideIcons();
         }
     });
 }
@@ -450,14 +248,14 @@ function copiarLink() {
             setTimeout(() => {
                 botaoCopiar.innerHTML = '<i data-lucide="copy"></i>';
                 botaoCopiar.style.background = 'rgba(255, 255, 255, 0.2)';
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
+                if (typeof initLucideIcons === 'function') {
+                    initLucideIcons();
                 }
             }, 2000);
 
             // Reinicializar ícones Lucide
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+            if (typeof initLucideIcons === 'function') {
+                initLucideIcons();
             }
         }).catch(err => {
             console.error('Erro ao copiar:', err);
@@ -468,7 +266,20 @@ function copiarLink() {
 
 // ===== GESTÃO DE USUÁRIOS =====
 
-async function loadUsers() {
+// Função de teste simples
+function testeSimples() {
+    alert('✅ Função testeSimples() funcionou!');
+}
+
+// Nova função para carregar usuários
+function carregarUsuarios() {
+    alert('🎯 carregarUsuarios() foi chamada!');
+}
+
+function loadUsers() {
+    alert('🚀 loadUsers() foi chamada!');
+    console.log('🚀 loadUsers() chamada!');
+
     const usersList = document.getElementById('usersList');
     const usersLoading = document.getElementById('usersLoading');
     const usersTableBody = document.getElementById('usersTableBody');
@@ -477,30 +288,41 @@ async function loadUsers() {
     usersList.style.display = 'none';
     usersLoading.style.display = 'block';
 
-    try {
-        const response = await fetch('/users');
-        const data = await response.json();
+    // Usar fetch sem async/await
+    fetch('/api/users', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('📡 Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('📊 Data received:', data);
 
-        if (response.ok) {
+        if (data.sucesso) {
+            console.log('✅ Resposta OK, processando usuários...');
+
             // Limpar tabela
             usersTableBody.innerHTML = '';
 
+            console.log('👥 Usuários encontrados:', data.users.length);
+
             // Adicionar usuários
             data.users.forEach(user => {
+                console.log('👤 Processando usuário:', user);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${user.email}</td>
-                    <td>${user.name}</td>
-                    <td>
-                        <select class="form-select form-select-sm" onchange="updateUserRole('${user.id}', this.value)">
-                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            <option value="atendente" ${user.role === 'atendente' ? 'selected' : ''}>Atendente</option>
-                        </select>
-                    </td>
+                    <td>${user.role === 'admin' ? 'Administrador' : 'Usuário'}</td>
+                    <td><span class="badge bg-success">Ativo</span></td>
                     <td>${new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
                     <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}', '${user.email}')">
-                            <i data-lucide="trash-2"></i>
+                        <button class="ui-btn ui-btn--sm ui-btn--danger" onclick="alert('Remover usuário')">
+                            Remover
                         </button>
                     </td>
                 `;
@@ -512,17 +334,20 @@ async function loadUsers() {
             usersList.style.display = 'block';
 
             // Reinicializar ícones
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+            if (typeof window.refreshIcons === 'function') {
+                window.refreshIcons();
             }
+
         } else {
-            throw new Error(data.erro || 'Erro ao carregar usuários');
+            throw new Error(data.erro || 'Erro na resposta da API');
         }
-    } catch (error) {
-        console.error('Erro:', error);
+    })
+    .catch(error => {
+        console.error('❌ Erro ao carregar usuários:', error);
         usersLoading.style.display = 'none';
-        mostrarMensagem('❌ Erro ao carregar usuários: ' + error.message, 'danger');
-    }
+        usersList.style.display = 'block';
+        usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar usuários: ' + error.message + '</td></tr>';
+    });
 }
 
 async function updateUserRole(userId, newRole) {
@@ -605,5 +430,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Função para carregar usuários (movida para o final)
+function carregarUsuariosFinal() {
+    alert('🎯 carregarUsuariosFinal() funcionou!');
+    console.log('🎯 Função no final do script executada');
+}
+
+// Tornar a função global
+window.carregarUsuariosFinal = carregarUsuariosFinal;
+
 </script>
+
 {% endblock %}

@@ -50,20 +50,28 @@ def verify_token(token, token_type='access'):
 def get_current_user():
     """Obtém usuário atual dos cookies JWT"""
     access_token = request.cookies.get('access_token')
+    print(f"🔍 [AUTH] Access token presente: {bool(access_token)}")
     if not access_token:
+        print("❌ [AUTH] Nenhum access token encontrado")
         return None
 
     payload = verify_token(access_token, 'access')
+    print(f"🔍 [AUTH] Payload válido: {bool(payload)}")
     if not payload:
+        print("❌ [AUTH] Token inválido ou expirado")
         return None
 
     user_id = payload.get('user_id')
+    print(f"🔍 [AUTH] User ID: {user_id}")
     if not user_id:
+        print("❌ [AUTH] User ID não encontrado no payload")
         return None
 
     # Importação local para evitar circular import
     from stores.user_store import get_user_by_id
-    return get_user_by_id(user_id)
+    user = get_user_by_id(user_id)
+    print(f"✅ [AUTH] Usuário encontrado: {user['email'] if user else 'None'}")
+    return user
 
 
 def require_auth(f):

@@ -103,13 +103,13 @@ def list_users(limit: int = 50, offset: int = 0) -> List[Dict]:
     """Lista usuários com paginação"""
     users = load_users()
     active_users = [
-        user for user in users.values() 
-        if user.get('deletedAt') is None
+        user for user in users.values()
+        if user.get('deletedAt') is None and user.get('role') != 'system'  # Filtrar usuário system
     ]
-    
+
     # Ordenar por data de criação
     active_users.sort(key=lambda x: x.get('createdAt', ''), reverse=True)
-    
+
     # Aplicar paginação
     return active_users[offset:offset + limit]
 
@@ -122,7 +122,16 @@ def ensure_admin_user():
         create_user(ADMIN_EMAIL, ADMIN_PASSWORD, 'admin', 'Administrador')
         print("✅ Usuário admin criado com sucesso!")
     else:
-        print(f"✅ Usuário admin já existe: {ADMIN_EMAIL}")
+        # Verificar se precisa atualizar senha para Werkzeug
+        if admin_user.get('passwordHash') and len(admin_user['passwordHash']) == 64:
+            print(f"🔄 Atualizando senha admin para Werkzeug: {ADMIN_EMAIL}")
+            users = load_users()
+            users[admin_user['id']]['passwordHash'] = hash_password(ADMIN_PASSWORD)
+            users[admin_user['id']]['updatedAt'] = datetime.now(timezone.utc).isoformat()
+            save_users(users)
+            print("✅ Senha admin atualizada para Werkzeug!")
+        else:
+            print(f"✅ Usuário admin já existe: {ADMIN_EMAIL}")
 
 
 def reassign_or_anonymize(user_id: str, system_user_id: str) -> bool:

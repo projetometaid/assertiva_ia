@@ -136,15 +136,18 @@ def aceitar_convite():
 @require_role('admin')
 def list_users():
     """API para listar usuários"""
+    print("🔍 [API] list_users() chamada")
     try:
         limit = int(request.args.get('limit', 50))
         offset = int(request.args.get('offset', 0))
-        
+        print(f"🔍 [API] Parâmetros: limit={limit}, offset={offset}")
+
         users = get_users_paginated(limit, offset)
-        
+        print(f"🔍 [API] Usuários encontrados: {len(users)}")
+
         return jsonify({
             'sucesso': True,
-            'usuarios': users,
+            'users': users,  # Mudado de 'usuarios' para 'users'
             'total': len(users)
         })
         

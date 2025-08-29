@@ -1,0 +1,31 @@
+<!-- Mobile Toggle Button -->
+<button class="mobile-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Alternar menu">
+    <i data-lucide="menu" class="lucide-icon"></i>
+    <i class="fas fa-bars fallback-icon" style="display: none;"></i>
+</button>
+
+<!-- Navbar (opcional para futuras funcionalidades) -->
+<nav class="navbar-top" style="display: none;">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('web.atendimento') }}">
+            <span class="brand-badge"></span>
+            <span class="fw-semibold">Sistema Assertiva</span>
+        </a>
+        <div class="navbar-nav">
+            {% if user %}
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i data-lucide="user-circle"></i>
+                        {{ user.email }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i data-lucide="user"></i> Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i data-lucide="settings"></i> Configurações</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="fazerLogout()"><i data-lucide="log-out"></i> Sair</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

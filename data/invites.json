@@ -6,5 +6,13 @@
     "used": true,
     "created_at": "2025-08-29T09:50:56.156382",
     "used_at": "2025-08-29T09:53:06.950329"
+  },
+  {
+    "token_id": "c77385a2-4b9f-40d5-a3bd-39ea2faaf8c2",
+    "email": "leandro@gmail.com",
+    "created_at": "2025-08-29T19:32:49.608764+00:00",
+    "expires_at": "2025-08-29T20:02:49.608764+00:00",
+    "used": false,
+    "used_at": null
   }
 ]

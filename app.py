@@ -32,7 +32,10 @@ def create_app():
         SESSION_COOKIE_SECURE=IS_PRODUCTION,
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE='Lax',
-        SESSION_COOKIE_NAME='assertiva_session'
+        SESSION_COOKIE_NAME='assertiva_session',
+        # Desenvolvedor: garanta recarregamento de templates e assets em DEV
+        TEMPLATES_AUTO_RELOAD=not IS_PRODUCTION,
+        SEND_FILE_MAX_AGE_DEFAULT=0 if not IS_PRODUCTION else 31536000
     )
     
     # CORS apenas para origem específica

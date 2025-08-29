@@ -1,7 +1,7 @@
 """
 Rotas HTML (páginas web)
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response
+from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response, jsonify
 
 from security.auth import require_auth, require_role, get_current_user
 from security.cookies import clear_auth_cookies
@@ -32,14 +32,20 @@ def login():
 @require_auth
 def atendimento():
     """Página principal de atendimento"""
-    return render_template('atendimento.html')
+    user = get_current_user()
+    response = make_response(render_template('atendimento.html', user=user))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 @web.route('/configuracoes')
 @require_role('admin')
 def configuracoes():
     """Página de configurações (apenas admin)"""
-    return render_template('configuracoes.html')
+    user = get_current_user()
+    return render_template('configuracoes.html', user=user)
 
 
 @web.route('/logout', methods=['POST', 'GET'])
@@ -68,8 +74,4 @@ def convite():
     return render_template('convite.html', token=token, email=email)
 
 
-@web.route('/users')
-@require_role('admin')
-def users():
-    """Redireciona para API de usuários (compatibilidade)"""
-    return redirect(url_for('api.list_users'))
+

@@ -13,10 +13,10 @@
     "id": "10018eac-5b20-4913-b5b2-78b2a75804ad",
     "email": "admin@assertiva.local",
     "role": "admin",
-    "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "passwordHash": "pbkdf2:sha256:600000$BekYdfccV32H3LVe$5b712d0441e0b5ac4aa98dda205110e8ec58c8131e9b1348852604909392fd5b",
     "name": "Administrador",
     "createdAt": "2025-08-29T12:20:41.601621+00:00",
-    "updatedAt": "2025-08-29T12:21:13.042854+00:00",
+    "updatedAt": "2025-08-29T13:40:59.390122+00:00",
     "deletedAt": null
   },
   "6d3a9ffa-6ae1-448b-baa9-bc61fdb17121": {
@@ -27,6 +27,16 @@
     "name": "Leandro Albertini",
     "createdAt": "2025-08-29T12:53:06.952085+00:00",
     "updatedAt": "2025-08-29T12:57:12.413725+00:00",
+    "deletedAt": null
+  },
+  "b0bb221d-7768-409e-b83e-8dd669815410": {
+    "id": "b0bb221d-7768-409e-b83e-8dd669815410",
+    "email": "leandro.albertini@assertivasolucoes.com.br",
+    "role": "admin",
+    "passwordHash": "pbkdf2:sha256:600000$O1MMD8huUDsHmpeJ$a785cd1978588c10b3ee61e9572b804beff9a483c9c3fd8bf38d251cd5fc7fa9",
+    "name": "Leandro Albertini",
+    "createdAt": "2025-08-29T13:42:55.976232+00:00",
+    "updatedAt": "2025-08-29T13:42:55.976414+00:00",
     "deletedAt": null
   }
 }
