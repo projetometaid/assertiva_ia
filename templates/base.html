@@ -47,7 +47,12 @@
                 </a>
             </div>
 
-            {% if user and user.role == 'admin' %}
+        </nav>
+
+        <!-- Footer with Logout -->
+        <div class="sidebar-footer">
+            {% if user %}
+            {% if user.role == 'admin' %}
             <div class="nav-item">
                 <a href="{{ url_for('configuracoes') }}" class="nav-link {{ 'active' if request.endpoint == 'configuracoes' }}">
                     <div class="nav-icon"><i data-lucide="settings"></i></div>
@@ -55,12 +60,6 @@
                 </a>
             </div>
             {% endif %}
-
-        </nav>
-
-        <!-- Footer with Logout -->
-        <div class="sidebar-footer">
-            {% if user %}
             <div class="nav-item">
                 <a href="#" class="nav-link logout-link"
                    style="cursor: pointer; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 8px; transition: all 0.3s ease;"
