@@ -2,119 +2,410 @@
 
 ## 📋 Visão Geral
 
-Sistema completo de apoio ao atendimento com IA, gestão de usuários, autenticação JWT e interface moderna. Inclui sistema de convites, RBAC (Role-Based Access Control) e integração com OpenAI.
+Sistema completo de apoio ao atendimento com IA, construído com **arquitetura organizada em camadas**, autenticação JWT segura, gestão completa de usuários e interface moderna. Inclui sistema de convites, RBAC (Role-Based Access Control), integração com OpenAI e preparação para migração futura para AWS Cognito.
 
-**🎯 Objetivo:** Sistema profissional de atendimento com IA, pronto para produção com todas as funcionalidades de segurança e gestão.
+**🎯 Objetivo:** Sistema profissional de atendimento com IA, pronto para produção com arquitetura escalável, segurança avançada e manutenibilidade.
 
 ## 🏗️ Arquitetura do Sistema
 
-### 📁 Estrutura de Arquivos
+### 📁 Nova Estrutura Organizada em Camadas
 ```
 assertiva_ia/
-├── app.py                      # Aplicação Flask principal
-├── sistema_apoio_atendimento.py # Motor de IA e processamento
-├── .env                        # Variáveis de ambiente
-├── .env.example               # Exemplo de configuração
-├── requirements.txt            # Dependências Python
-├── README.md                  # Esta documentação
-├── data/                      # Dados do sistema
-│   ├── users.json            # Base de usuários
-│   └── invites.json          # Convites pendentes
-├── templates/                 # Templates HTML
+├── app.py                      # 🚀 Aplicação Flask principal (Factory Pattern)
+├── sistema_apoio_atendimento.py # 🤖 Motor de IA e processamento OpenAI
+├── .env                        # 🔐 Variáveis de ambiente
+├── .env.example               # 📋 Exemplo de configuração completo
+├── requirements.txt            # 📦 Dependências Python
+├── README.md                  # 📚 Esta documentação
+│
+├── config/                    # ⚙️ CONFIGURAÇÕES CENTRALIZADAS
+│   ├── __init__.py
+│   └── settings.py           # Todas as variáveis de ambiente e constantes
+│
+├── security/                  # 🛡️ MÓDULOS DE SEGURANÇA
+│   ├── __init__.py
+│   ├── auth.py              # JWT, tokens, decorators @require_auth/@require_role
+│   ├── cookies.py           # Gerenciamento seguro de cookies (prod/dev)
+│   └── password.py          # Werkzeug hash/verify (substitui SHA256)
+│
+├── stores/                    # 💾 CAMADA DE DADOS (Data Access Layer)
+│   ├── __init__.py
+│   ├── user_store.py        # CRUD usuários, soft delete, paginação
+│   └── invite_store.py      # CRUD convites, tokens JWT, cleanup automático
+│
+├── services/                  # 🔧 REGRAS DE NEGÓCIO (Business Logic)
+│   ├── __init__.py
+│   ├── auth_service.py      # Autenticação, validações, permissões
+│   └── user_service.py      # Gestão usuários, convites, validações
+│
+├── routes/                    # 🌐 CONTROLADORES (Blueprints)
+│   ├── __init__.py
+│   ├── web.py              # Rotas HTML (páginas web)
+│   └── api.py              # Rotas API JSON (/api/*)
+│
+├── data/                      # 📊 DADOS PERSISTENTES
+│   ├── users.json            # Base de usuários (Werkzeug hashes)
+│   └── invites.json          # Convites pendentes (JWT tokens)
+│
+├── templates/                 # 🎨 TEMPLATES HTML
 │   ├── base.html             # Template base com navegação
 │   ├── login.html            # Página de login
-│   ├── atendimento.html      # Interface principal
-│   ├── configuracoes.html    # Gestão de usuários
+│   ├── atendimento.html      # Interface principal de IA
+│   ├── configuracoes.html    # Gestão de usuários (admin only)
 │   └── convite.html          # Aceitar convites
-├── static/                   # Recursos estáticos
-│   ├── css/style.css        # Estilos principais
+│
+├── static/                   # 🎭 RECURSOS ESTÁTICOS
+│   ├── css/style.css        # Estilos principais (variáveis CSS)
 │   ├── js/                  # Scripts JavaScript
-│   └── assets/              # Imagens, ícones, etc.
-└── GUIAS_PRATICOS_ASSERTIVA/ # Base de conhecimento (19 guias)
+│   └── assets/              # Imagens, ícones, favicons
+│
+└── GUIAS_PRATICOS_ASSERTIVA/ # 📖 BASE DE CONHECIMENTO IA
     ├── 00_INDICE_GUIAS_PRATICOS.md
-    └── *.md                 # Guias em Markdown
+    └── *.md                 # 19 guias práticos em Markdown
 ```
 
-### 🔧 Componentes Principais
+### 🔧 Arquitetura em Camadas Implementada
 
-1. **Flask Application (`app.py`)**
-   - Servidor web com JWT
-   - Autenticação segura
-   - RBAC (admin/atendente)
-   - Sistema de convites
+#### 🏗️ **1. CAMADA DE CONFIGURAÇÃO (`config/`)**
+- **`settings.py`**: Centralizou TODAS as configurações
+- **Paths robustos**: `BASE_DIR = Path(__file__).parent.parent`
+- **Variáveis de ambiente**: JWT, convites, admin, CORS, OpenAI
+- **Função `ensure_data_dir()`**: Cria diretórios automaticamente
 
-2. **Motor de IA (`sistema_apoio_atendimento.py`)**
-   - Integração com OpenAI GPT
-   - Processamento de base de conhecimento
-   - Geração de respostas contextualizadas
+#### 🛡️ **2. CAMADA DE SEGURANÇA (`security/`)**
+- **`auth.py`**: JWT completo, decorators `@require_auth`, `@require_role`
+- **`cookies.py`**: Cookies condicionais por ambiente (secure=prod)
+- **`password.py`**: Werkzeug (substitui SHA256) - hash_password/verify_password
+- **Blindagens**: Proteção SYSTEM_USER_ID, auto-exclusão, role próprio
 
-3. **Interface Web (`templates/` + `static/`)**
-   - Design moderno e responsivo
-   - Gestão de usuários
-   - Sistema de configurações
+#### 💾 **3. CAMADA DE DADOS (`stores/`)**
+- **`user_store.py`**: CRUD completo, soft delete, paginação, ensure_admin_user
+- **`invite_store.py`**: Tokens JWT, TTL configurável, cleanup automático
+- **Validações**: Email duplicado, convite ativo, expiração
+- **Paths seguros**: Resolve a partir do app, não CWD
 
-4. **Base de Conhecimento**
-   - 19 guias práticos em Markdown
-   - Busca semântica automática
-   - Contexto especializado Assertiva
+#### 🔧 **4. CAMADA DE NEGÓCIO (`services/`)**
+- **`auth_service.py`**: Autenticação, geração tokens, validações permissão
+- **`user_service.py`**: Regras de negócio, validações email, confirmações
+- **Separação clara**: Lógica de negócio isolada dos dados
 
-## 🚀 Instalação e Execução
+#### 🌐 **5. CAMADA DE CONTROLADORES (`routes/`)**
+- **`web.py`**: Blueprint HTML (páginas), redirects + flash
+- **`api.py`**: Blueprint JSON (/api/*), sempre retorna JSON + HTTP codes
+- **Blueprints separados**: Organização clara, prefixos automáticos
 
-### Pré-requisitos
-- Python 3.8+ instalado
-- Acesso à internet (para OpenAI API)
-- Terminal/Command Prompt
+#### 🤖 **6. MOTOR DE IA (`sistema_apoio_atendimento.py`)**
+- **Integração OpenAI GPT**: Processamento de perguntas
+- **Base de conhecimento**: 19 guias práticos em Markdown
+- **Busca semântica**: Contexto especializado Assertiva
 
-### Execução
+## 🆕 Melhorias Implementadas na Nova Arquitetura
+
+### ✅ **A) Sistema de Autenticação Limpo**
+- **Removidos decorators antigos**: `login_required`, `admin_required`, `require_auth_with_security`
+- **Mantido apenas JWT**: `get_current_user()` via cookies httpOnly
+- **Código reduzido**: -150 linhas de código duplicado/obsoleto
+- **Importações circulares**: Resolvidas com módulo `security/password.py`
+
+### 🍪 **B) Cookies Condicionais por Ambiente**
+- **Função `set_cookie()`**: Configuração automática baseada em `FLASK_ENV`
+- **Produção**: `secure=True`, `httponly=True`, `samesite='Lax'`
+- **Desenvolvimento**: `secure=False` para localhost
+- **Simplificação**: Uma função para todos os cookies JWT
+
+### 🔐 **C) Werkzeug para Senhas (Segurança Melhorada)**
+- **Substituído SHA256**: Por `generate_password_hash()` / `check_password_hash()`
+- **Salt automático**: Cada senha tem salt único
+- **Compatibilidade**: Sistema detecta e migra hashes antigos
+- **Aplicado em**: Login, criação de usuário, convites
+
+### 📁 **D) Paths Robustos e Organizados**
+- **pathlib.Path**: `BASE_DIR = Path(__file__).parent`
+- **Variáveis centralizadas**: `DATA_DIR`, `USERS_FILE`, `INVITES_FILE`
+- **Criação automática**: `ensure_data_dir()` com `mkdir(parents=True, exist_ok=True)`
+- **Independente do CWD**: Funciona de qualquer diretório
+
+### 🛡️ **E) Blindagens de Segurança Avançadas**
+- **Proteção SYSTEM_USER_ID**: Não pode ser editado/excluído
+- **Auto-proteção**: Usuário não pode se auto-excluir
+- **Role próprio**: Não pode alterar próprio role
+- **Confirmação obrigatória**: "EXCLUIR" para deletar usuários
+- **Reatribuição de dados**: `reassign_or_anonymize()` antes do soft delete
+
+### 🏗️ **F) Arquitetura em Camadas (Clean Architecture)**
+- **Separação clara**: Config → Security → Stores → Services → Routes
+- **Blueprints organizados**: `/api/*` JSON, páginas HTML separadas
+- **Injeção de dependência**: Services usam stores, routes usam services
+- **Testabilidade**: Cada camada pode ser testada independentemente
+- **Manutenibilidade**: Mudanças isoladas por responsabilidade
+
+### 🔄 **G) Sistema de Convites Robusto**
+- **Tokens JWT**: Com `exp` em epoch seconds
+- **TTL configurável**: `INVITE_TTL_MINUTES` via env
+- **Prevenção duplicatas**: Um convite ativo por email
+- **Cleanup automático**: Remove convites expirados na inicialização
+- **Validação forte**: Email format, token integrity, expiração
+
+### 📊 **H) Gestão de Usuários Completa**
+- **Paginação**: `GET /api/users?limit=50&offset=0`
+- **Soft delete**: `deletedAt` timestamp, dados preservados
+- **RBAC granular**: Admin vs atendente, validações por endpoint
+- **Auditoria**: Logs de ações sensíveis com timestamp e IP
+- **Validações**: Email format, role enum, confirmações
+
+## 🚀 Como Rodar Local
+
+### 📋 Pré-requisitos
+- **Python 3.8+** instalado
+- **Git** para clonar o repositório
+- **Chave OpenAI API** (obrigatória para IA)
+- **Terminal/Command Prompt**
+
+### ⚡ Execução Rápida
 ```bash
-# 1. Instalar dependências
-pip install -r requirements.txt
+# 1. Clonar repositório
+git clone https://github.com/projetometaid/assertiva_ia.git
+cd assertiva_ia
 
-# 2. Configurar variáveis de ambiente
-cp .env.example .env
-# Edite o .env com suas configurações
-
-# 3. Executar o sistema
-python3 app.py
-```
-
-**🌐 Acesso:** http://127.0.0.1:5001
-
-### Ambiente Virtual (Recomendado)
-```bash
-# Criar ambiente virtual
+# 2. Criar ambiente virtual (RECOMENDADO)
 python3 -m venv venv
 
-# Ativar ambiente virtual
+# 3. Ativar ambiente virtual
 # Linux/Mac:
 source venv/bin/activate
 # Windows:
 venv\Scripts\activate
 
-# Instalar dependências
+# 4. Instalar dependências
 pip install -r requirements.txt
 
-# Executar aplicação
+# 5. Configurar variáveis de ambiente
+cp .env.example .env
+# EDITE o arquivo .env com suas configurações
+
+# 6. Executar o sistema
 python3 app.py
 ```
 
-## 🌐 Acesso ao Sistema
+### 🔑 Configuração Obrigatória (.env)
+```bash
+# Editar .env com suas configurações:
+nano .env  # ou seu editor preferido
 
-### URLs de Acesso
-- **Principal:** http://127.0.0.1:5001
-- **Login:** http://127.0.0.1:5001/login
-- **Atendimento:** http://127.0.0.1:5001/atendimento
-- **Configurações:** http://127.0.0.1:5001/configuracoes
+# Configurações mínimas obrigatórias:
+OPENAI_API_KEY=sua-chave-openai-aqui
+JWT_SECRET=sua-chave-jwt-secreta-aqui
+SECRET_KEY=sua-chave-flask-secreta-aqui
 
-### 🔐 Credenciais Iniciais
-- **Email:** `admin@assertiva.local`
-- **Senha:** `admin123`
+# Para produção, adicionar:
+FLASK_ENV=production
+```
 
-### 🔑 Gestão de Usuários
-- Sistema completo de gestão via interface web
-- Criação de convites por link
-- Roles: admin e atendente
-- Dados armazenados em `data/users.json`
+### 🌐 Acesso ao Sistema
+- **URL Principal:** http://127.0.0.1:5001
+- **Login Inicial:** `admin@assertiva.local` / `admin123`
+- **Configurações:** http://127.0.0.1:5001/configuracoes (admin only)
+
+## ☁️ Migração para AWS Cognito (Futuro)
+
+### 🏗️ Infraestrutura com Terraform
+
+O sistema foi **projetado para migração fácil** para AWS Cognito. A arquitetura em camadas permite trocar apenas o **auth_adapter** mantendo todas as rotas iguais.
+
+#### 📁 Estrutura de Infraestrutura
+```bash
+# Criar estrutura Terraform
+mkdir -p infra/terraform
+cd infra/terraform
+
+# Arquivos Terraform necessários:
+├── main.tf              # Provider AWS, região
+├── cognito.tf           # User Pool + App Client
+├── variables.tf         # Variáveis de entrada
+├── outputs.tf           # Exportar IDs e URLs
+└── terraform.tfvars     # Valores específicos do ambiente
+```
+
+#### 🔧 Configuração Cognito (cognito.tf)
+```hcl
+# User Pool
+resource "aws_cognito_user_pool" "assertiva_pool" {
+  name = "assertiva-users"
+
+  # Configurações de senha
+  password_policy {
+    minimum_length    = 8
+    require_lowercase = true
+    require_numbers   = true
+    require_symbols   = true
+    require_uppercase = true
+  }
+
+  # Atributos obrigatórios
+  schema {
+    attribute_data_type = "String"
+    name               = "email"
+    required           = true
+    mutable           = true
+  }
+
+  # Configurações de email
+  auto_verified_attributes = ["email"]
+  username_attributes      = ["email"]
+}
+
+# App Client
+resource "aws_cognito_user_pool_client" "assertiva_client" {
+  name         = "assertiva-app"
+  user_pool_id = aws_cognito_user_pool.assertiva_pool.id
+
+  # Configurações JWT
+  access_token_validity  = 15  # minutos
+  refresh_token_validity = 7   # dias
+
+  # Fluxos permitidos
+  explicit_auth_flows = [
+    "ADMIN_NO_SRP_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
+}
+```
+
+#### 📤 Outputs (outputs.tf)
+```hcl
+output "user_pool_id" {
+  value = aws_cognito_user_pool.assertiva_pool.id
+}
+
+output "client_id" {
+  value = aws_cognito_user_pool_client.assertiva_client.id
+}
+
+output "jwks_uri" {
+  value = "https://cognito-idp.${var.aws_region}.amazonaws.com/${aws_cognito_user_pool.assertiva_pool.id}/.well-known/jwks.json"
+}
+```
+
+### � Adaptador de Autenticação
+
+#### Estrutura do Auth Adapter
+```python
+# security/auth_adapter.py
+class AuthAdapter:
+    def authenticate(self, email, password): pass
+    def create_user(self, email, temp_password): pass
+    def validate_token(self, token): pass
+
+# Implementações:
+class LocalAuthAdapter(AuthAdapter):     # JSON atual
+class CognitoAuthAdapter(AuthAdapter):   # AWS Cognito
+```
+
+#### Migração Cognito (cognito_adapter.py)
+```python
+import boto3
+from botocore.exceptions import ClientError
+
+class CognitoAuthAdapter(AuthAdapter):
+    def __init__(self):
+        self.cognito = boto3.client('cognito-idp')
+        self.user_pool_id = os.getenv('COGNITO_USER_POOL_ID')
+        self.client_id = os.getenv('COGNITO_CLIENT_ID')
+
+    def create_user(self, email, role='atendente'):
+        """Cria usuário no Cognito"""
+        try:
+            response = self.cognito.admin_create_user(
+                UserPoolId=self.user_pool_id,
+                Username=email,
+                UserAttributes=[
+                    {'Name': 'email', 'Value': email},
+                    {'Name': 'custom:role', 'Value': role}
+                ],
+                MessageAction='SUPPRESS',  # Não enviar email
+                TemporaryPassword=self._generate_temp_password()
+            )
+
+            # Definir senha permanente
+            self.cognito.admin_set_user_password(
+                UserPoolId=self.user_pool_id,
+                Username=email,
+                Password=temp_password,
+                Permanent=True
+            )
+
+            return True, None
+        except ClientError as e:
+            return False, str(e)
+
+    def validate_token(self, id_token):
+        """Valida ID Token com JWKs do Cognito"""
+        # Implementar validação JWT com chaves públicas
+        # jwks_uri do output Terraform
+        pass
+```
+
+### 🚀 Comandos de Deploy
+
+#### 1. Provisionar Infraestrutura
+```bash
+# Inicializar Terraform
+cd infra/terraform
+terraform init
+
+# Planejar mudanças
+terraform plan
+
+# Aplicar infraestrutura
+terraform apply
+
+# Obter outputs
+terraform output user_pool_id
+terraform output client_id
+terraform output jwks_uri
+```
+
+#### 2. Configurar Aplicação
+```bash
+# Adicionar ao .env
+COGNITO_USER_POOL_ID=us-east-1_xxxxxxxxx
+COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
+COGNITO_JWKS_URI=https://cognito-idp.us-east-1.amazonaws.com/...
+AUTH_ADAPTER=cognito  # ou 'local'
+```
+
+#### 3. Migrar Usuários
+```python
+# Script de migração (migrate_to_cognito.py)
+def migrate_users():
+    local_users = load_users()  # JSON atual
+    cognito_adapter = CognitoAuthAdapter()
+
+    for user in local_users.values():
+        if user.get('deletedAt') is None:
+            success, error = cognito_adapter.create_user(
+                user['email'],
+                user['role']
+            )
+            if success:
+                print(f"✅ Migrado: {user['email']}")
+            else:
+                print(f"❌ Erro: {user['email']} - {error}")
+```
+
+### ✅ Vantagens da Migração
+- **Escalabilidade**: Suporta milhões de usuários
+- **Segurança**: MFA, detecção de anomalias, compliance
+- **Manutenção**: Zero manutenção de infraestrutura auth
+- **Integração**: SSO, SAML, OAuth2, redes sociais
+- **Auditoria**: CloudTrail automático
+- **Backup**: Dados replicados automaticamente
+
+### 🔄 Compatibilidade Total
+- **Mesmas rotas**: `/api/login`, `/api/users`, etc.
+- **Mesma interface**: Nenhuma mudança no frontend
+- **Mesmos roles**: admin/atendente preservados
+- **Migração gradual**: Pode rodar ambos em paralelo
 
 ## ✨ Funcionalidades Implementadas
 
@@ -359,11 +650,98 @@ Este README foi escrito especificamente para permitir que outras IAs:
 3. **Debuguem** problemas comuns
 4. **Estendam** funcionalidades conforme necessário
 
-### Informações de Contato
-- **Sistema:** Assertiva IA - Apoio ao Atendimento
-- **Versão:** Sistema completo com JWT e gestão de usuários
-- **Última atualização:** Agosto 2025
+## 🧪 Desenvolvimento e Testes
+
+### 📋 Testes Recomendados
+```bash
+# Instalar dependências de teste
+pip install pytest pytest-flask pytest-cov
+
+# Estrutura de testes sugerida:
+tests/
+├── test_auth.py          # Testes de autenticação
+├── test_users.py         # Testes de gestão de usuários
+├── test_invites.py       # Testes de convites
+├── test_api.py           # Testes de endpoints API
+└── test_security.py      # Testes de segurança
+
+# Executar testes
+pytest tests/ -v --cov=.
+```
+
+### 🔧 Qualidade de Código
+```bash
+# Instalar ferramentas de qualidade
+pip install black isort flake8 pre-commit
+
+# Configurar pre-commit
+pre-commit install
+
+# Formatação automática
+black .
+isort .
+flake8 .
+```
+
+### 📊 Monitoramento de Produção
+```bash
+# Health check endpoint
+curl http://127.0.0.1:5001/health
+
+# Response esperado:
+{
+  "status": "healthy",
+  "sistema_apoio": true,
+  "build_version": "1.0.0",
+  "uptime": "TODO: implementar uptime"
+}
+```
+
+### 🚀 Deploy de Produção
+```bash
+# Usar WSGI server (não Flask dev server)
+pip install gunicorn
+
+# Executar com Gunicorn
+gunicorn -w 4 -b 0.0.0.0:5001 app:app
+
+# Ou com Docker (Dockerfile sugerido):
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 5001
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "app:app"]
+```
+
+## 📞 Suporte e Contribuição
+
+### 🤝 Como Contribuir
+1. **Fork** o repositório
+2. **Crie branch** para sua feature: `git checkout -b feature/nova-funcionalidade`
+3. **Commit** suas mudanças: `git commit -m 'feat: adiciona nova funcionalidade'`
+4. **Push** para branch: `git push origin feature/nova-funcionalidade`
+5. **Abra Pull Request** com descrição detalhada
+
+### 📧 Contato
+- **Email:** leandro.albertini@metaid.com.br
+- **Repositório:** https://github.com/projetometaid/assertiva_ia
+- **Issues:** Para bugs e sugestões de melhorias
+
+### 📝 Convenções de Commit
+```bash
+feat: nova funcionalidade
+fix: correção de bug
+docs: atualização de documentação
+style: formatação, sem mudança de lógica
+refactor: refatoração de código
+test: adição ou correção de testes
+chore: tarefas de manutenção
+```
 
 ---
 
-**🎉 Sistema pronto para uso! Execute `python3 app.py` e acesse http://127.0.0.1:5001**
+**� Sistema Assertiva IA - Arquitetura moderna, segurança avançada e pronto para escalar!**
+
+*Desenvolvido com ❤️ pela equipe MetaID*
