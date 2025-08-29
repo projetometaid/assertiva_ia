@@ -42,21 +42,20 @@
         <nav class="sidebar-nav">
             <div class="nav-item">
                 <a href="{{ url_for('atendimento') }}" class="nav-link {{ 'active' if request.endpoint == 'atendimento' }}">
-                    <div class="nav-icon">💬</div>
+                    <div class="nav-icon"><i data-lucide="message-circle"></i></div>
                     <span class="nav-text">Atendimento</span>
                 </a>
             </div>
-            <!-- Admin removido na versão local -->
 
-            <!-- Histórico Item (only on atendimento page) -->
-            {% if request.endpoint == 'atendimento' %}
+            {% if user and user.role == 'admin' %}
             <div class="nav-item">
-                <a href="#" class="nav-link" id="historicoToggle" onclick="toggleHistorico()">
-                    <div class="nav-icon">🕒</div>
-                    <span class="nav-text">Histórico</span>
+                <a href="{{ url_for('configuracoes') }}" class="nav-link {{ 'active' if request.endpoint == 'configuracoes' }}">
+                    <div class="nav-icon"><i data-lucide="settings"></i></div>
+                    <span class="nav-text">Configurações</span>
                 </a>
             </div>
             {% endif %}
+
         </nav>
 
         <!-- Footer with Logout -->
@@ -67,14 +66,14 @@
                    style="cursor: pointer; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 8px; transition: all 0.3s ease;"
                    onmouseover="this.style.background='rgba(255,0,0,0.2)'"
                    onmouseout="this.style.background='rgba(255,0,0,0.1)'">
-                    <div class="nav-icon">🚪</div>
+                    <div class="nav-icon"><i data-lucide="log-out"></i></div>
                     <span class="nav-text">Sair</span>
                 </a>
             </div>
             {% else %}
             <div class="nav-item">
                 <div class="nav-link" style="opacity: 0.7;">
-                    <div class="nav-icon">🏠</div>
+                    <div class="nav-icon"><i data-lucide="home"></i></div>
                     <span class="nav-text">Versão Local</span>
                 </div>
             </div>
@@ -139,33 +138,11 @@
             }
         });
 
-        // Funções da Sidebar Histórico
+        // Funções da Sidebar Histórico (desabilitada)
         function toggleHistorico() {
-            console.log('🔍 toggleHistorico chamado!');
-            const sidebar = document.getElementById('historySidebar');
-            const logo = document.querySelector('.sidebar-logo');
-            console.log('📋 Sidebar encontrada:', sidebar);
-
-            if (sidebar) {
-                sidebar.classList.add('show');
-                console.log('✅ Classe "show" adicionada à sidebar');
-
-                // Expandir logo para mostrar nome completo
-                if (logo) {
-                    logo.classList.add('expanded');
-                    console.log('🎨 Logo expandido');
-                }
-
-                // Carregar histórico se existir
-                if (window.sistemaAtendimento) {
-                    console.log('📚 Carregando histórico...');
-                    window.sistemaAtendimento.carregarHistorico();
-                } else {
-                    console.log('⚠️ sistemaAtendimento não encontrado');
-                }
-            } else {
-                console.log('❌ Sidebar não encontrada!');
-            }
+            console.log('🔍 toggleHistorico desabilitado');
+            // Função desabilitada - não faz nada
+            return false;
         }
 
         function closeHistorySidebar() {
@@ -225,9 +202,20 @@
                 sessionStorage.clear();
             }
 
-            // Método direto: usar window.location.href para rota GET de logout
-            console.log('🌐 Redirecionando para logout via GET...');
-            window.location.href = '/logout-get';
+            // Fazer logout via POST
+            console.log('🌐 Fazendo logout via POST...');
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                console.log('✅ Logout realizado, redirecionando...');
+                window.location.href = '/login';
+            }).catch(() => {
+                console.log('⚠️ Erro no logout, redirecionando mesmo assim...');
+                window.location.href = '/login';
+            });
         }
 
         // Event listener para o botão

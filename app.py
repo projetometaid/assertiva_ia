@@ -17,7 +17,11 @@ except ImportError:
 
 # Sistema de autenticação DIRETO no app.py - SEM IMPORTS EXTERNOS
 import hashlib
+import jwt
+import json
 from functools import wraps
+from datetime import datetime, timedelta
+import secrets
 
 print("🔧 Carregando sistema de autenticação DIRETO...")
 
@@ -33,6 +37,133 @@ USERS_DB = {
 def _hash_password(password):
     """Gera hash SHA256 da senha"""
     return hashlib.sha256(password.encode()).hexdigest()
+
+# Sistema de convites
+INVITES_FILE = 'data/invites.json'
+JWT_SECRET = os.environ.get('JWT_SECRET', 'dev-jwt-secret-change-in-production')
+INVITE_TTL_MINUTES = 30
+
+def ensure_data_dir():
+    """Garante que o diretório data existe"""
+    os.makedirs('data', exist_ok=True)
+
+def load_invites():
+    """Carrega convites do arquivo JSON"""
+    ensure_data_dir()
+    try:
+        if os.path.exists(INVITES_FILE):
+            with open(INVITES_FILE, 'r') as f:
+                return json.load(f)
+    except:
+        pass
+    return []
+
+def save_invites(invites):
+    """Salva convites no arquivo JSON"""
+    ensure_data_dir()
+    with open(INVITES_FILE, 'w') as f:
+        json.dump(invites, f, indent=2)
+
+def clean_expired_invites():
+    """Remove convites expirados"""
+    invites = load_invites()
+    now = datetime.now().timestamp()
+    valid_invites = [inv for inv in invites if inv['expires_at'] > now and not inv['used']]
+    if len(valid_invites) != len(invites):
+        save_invites(valid_invites)
+    return valid_invites
+
+def generate_invite(email):
+    """Gera um convite para o email especificado"""
+    clean_expired_invites()
+
+    # Verificar se já existe convite válido para este email
+    invites = load_invites()
+    for invite in invites:
+        if invite['email'] == email and not invite['used']:
+            return None, "Já existe um convite válido para este email"
+
+    # Gerar token
+    token_id = secrets.token_urlsafe(16)
+    expires_at = datetime.now() + timedelta(minutes=INVITE_TTL_MINUTES)
+
+    token_data = {
+        'sub': email,
+        'jti': token_id,
+        'typ': 'invite',
+        'exp': expires_at.timestamp()
+    }
+
+    token = jwt.encode(token_data, JWT_SECRET, algorithm='HS256')
+
+    # Salvar convite
+    invite_data = {
+        'token_id': token_id,
+        'email': email,
+        'expires_at': expires_at.timestamp(),
+        'used': False,
+        'created_at': datetime.now().isoformat()
+    }
+
+    invites.append(invite_data)
+    save_invites(invites)
+
+    return token, None
+
+def validate_invite_token(token):
+    """Valida token de convite"""
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        token_id = payload.get('jti')
+        email = payload.get('sub')
+
+        # Verificar se convite existe e é válido
+        invites = load_invites()
+        for invite in invites:
+            if (invite['token_id'] == token_id and
+                invite['email'] == email and
+                not invite['used'] and
+                invite['expires_at'] > datetime.now().timestamp()):
+                return True, email, None
+
+        return False, None, "Convite inválido, usado ou expirado"
+
+    except jwt.ExpiredSignatureError:
+        return False, None, "Convite expirado"
+    except jwt.InvalidTokenError:
+        return False, None, "Token inválido"
+
+def use_invite_token(token, password):
+    """Usa o token de convite para criar usuário"""
+    valid, email, error = validate_invite_token(token)
+    if not valid:
+        return False, error
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+        token_id = payload.get('jti')
+
+        # Marcar convite como usado
+        invites = load_invites()
+        for invite in invites:
+            if invite['token_id'] == token_id:
+                invite['used'] = True
+                invite['used_at'] = datetime.now().isoformat()
+                break
+        save_invites(invites)
+
+        # Adicionar usuário ao sistema
+        USERS_DB[email] = {
+            "password_hash": _hash_password(password),
+            "name": email.split('@')[0].title(),
+            "role": "user",
+            "created_at": datetime.now().isoformat()
+        }
+
+        return True, "Usuário criado com sucesso"
+
+    except Exception as e:
+        return False, f"Erro ao criar usuário: {str(e)}"
 
 def authenticate_user(email, password):
     """Autentica usuário"""
@@ -214,6 +345,10 @@ except Exception as e:
 @app.route('/')
 def index():
     """Página inicial - redireciona para login se não autenticado, depois para atendimento"""
+    # Verificar se é uma requisição após logout
+    if request.referrer and '/logout' in request.referrer:
+        return redirect(url_for('login'))
+
     if not check_session_expiry() or 'user' not in session:
         return redirect(url_for('login'))
     return redirect(url_for('atendimento'))
@@ -286,8 +421,27 @@ def logout():
 
 @app.route('/logout-get')
 def logout_get():
-    """Rota GET para logout (redireciona para POST)"""
-    return redirect(url_for('login'))
+    """Rota GET para logout - faz logout real"""
+    user = get_current_user()
+    print(f"🚪 Fazendo logout GET do usuário: {user.get('email') if user else 'Nenhum'}")
+
+    # Destruir sessão completamente
+    session.clear()
+
+    # Criar resposta com redirecionamento
+    response = make_response(redirect(url_for('login')))
+
+    # Apagar cookie de sessão explicitamente
+    response.set_cookie('assertiva_session', '', expires=0,
+                       httponly=True, secure=has_https, samesite='Lax')
+
+    # Headers de no-cache para logout
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+
+    flash('Logout realizado com sucesso', 'success')
+    return response
 
 @app.route('/atendimento')
 @require_auth_with_security
@@ -297,7 +451,7 @@ def atendimento():
 
 
 @app.route('/api/responder', methods=['POST'])
-# @require_auth_with_security  # Temporariamente removido para debug
+@require_auth_with_security
 def api_responder():
     """API para gerar respostas de atendimento com segurança"""
     print("🔄 [LOG] Iniciando processamento da pergunta...")
@@ -355,6 +509,100 @@ def api_historico():
 def admin():
     """Painel administrativo com segurança avançada"""
     return render_template('admin.html', user=get_current_user())
+
+@app.route('/configuracoes')
+@require_admin_with_security
+def configuracoes():
+    """Página de configurações do sistema"""
+    return render_template('configuracoes.html', user=get_current_user())
+
+@app.route('/api/gerar-convite', methods=['POST'])
+@require_admin_with_security
+def api_gerar_convite():
+    """API para gerar convite de usuário"""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+
+        if not email:
+            return jsonify({'erro': 'Email é obrigatório'}), 400
+
+        # Validar formato do email
+        import re
+        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
+            return jsonify({'erro': 'Formato de email inválido'}), 400
+
+        # Verificar se usuário já existe
+        if email in USERS_DB:
+            return jsonify({'erro': 'Usuário já existe no sistema'}), 400
+
+        # Gerar convite
+        token, error = generate_invite(email)
+        if error:
+            return jsonify({'erro': error}), 400
+
+        # Gerar URL do convite
+        base_url = request.url_root.rstrip('/')
+        invite_url = f"{base_url}/convite?token={token}"
+
+        print(f"✅ Convite gerado para: {email}")
+
+        return jsonify({
+            'sucesso': True,
+            'url': invite_url,
+            'email': email,
+            'expira_em': f"{INVITE_TTL_MINUTES} minutos"
+        })
+
+    except Exception as e:
+        print(f"❌ Erro ao gerar convite: {str(e)}")
+        return jsonify({'erro': f'Erro interno: {str(e)}'}), 500
+
+@app.route('/convite')
+def convite():
+    """Página para aceitar convite"""
+    token = request.args.get('token')
+    if not token:
+        flash('Token de convite não encontrado', 'error')
+        return redirect(url_for('login'))
+
+    # Validar token
+    valid, email, error = validate_invite_token(token)
+    if not valid:
+        flash(f'Convite inválido: {error}', 'error')
+        return redirect(url_for('login'))
+
+    return render_template('convite.html', token=token, email=email)
+
+@app.route('/api/aceitar-convite', methods=['POST'])
+def api_aceitar_convite():
+    """API para aceitar convite e definir senha"""
+    try:
+        data = request.get_json()
+        token = data.get('token', '')
+        password = data.get('password', '')
+
+        if not token or not password:
+            return jsonify({'erro': 'Token e senha são obrigatórios'}), 400
+
+        if len(password) < 8:
+            return jsonify({'erro': 'Senha deve ter pelo menos 8 caracteres'}), 400
+
+        # Usar convite
+        success, message = use_invite_token(token, password)
+        if not success:
+            return jsonify({'erro': message}), 400
+
+        print(f"✅ Convite aceito e usuário criado")
+
+        return jsonify({
+            'sucesso': True,
+            'mensagem': message
+        })
+
+    except Exception as e:
+        print(f"❌ Erro ao aceitar convite: {str(e)}")
+        return jsonify({'erro': f'Erro interno: {str(e)}'}), 500
 
 @app.route('/health')
 def health():

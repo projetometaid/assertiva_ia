@@ -170,7 +170,6 @@ def login():
             session['session_token'] = str(uuid.uuid4())  # Token único da sessão
 
             print(f"✅ Login realizado com sucesso para: {user_data['name']}")
-            flash(f'Bem-vindo, {user_data["name"]}!', 'success')
 
             # Criar resposta com headers de segurança
             response = make_response(redirect(url_for('atendimento')))

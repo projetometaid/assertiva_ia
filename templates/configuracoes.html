@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações - Sistema Assertiva{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i data-lucide="settings"></i>
+                    Configurações do Sistema
+                </h1>
+                <p class="page-subtitle">Gerencie usuários e configurações do sistema</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Convites -->
+    <div class="row">
+        <div class="col-lg-8 col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i data-lucide="user-plus"></i>
+                        Convidar Novo Usuário
+                    </h3>
+                    <p class="card-subtitle">Gere um link de convite para adicionar novos usuários ao sistema</p>
+                </div>
+                <div class="card-body">
+                    <form id="formConvite">
+                        <div class="mb-3">
+                            <label for="emailUsuario" class="form-label">Email do usuário</label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="emailUsuario" 
+                                placeholder="usuario@exemplo.com"
+                                required
+                            >
+                            <div class="form-text">O usuário receberá um link para definir sua senha</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" id="btnGerarConvite">
+                            <i data-lucide="send"></i>
+                            Gerar Link de Convite
+                        </button>
+                    </form>
+
+                    <!-- Área de resultado -->
+                    <div id="resultadoConvite" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">
+                                <i data-lucide="check-circle"></i>
+                                Link de Convite Gerado!
+                            </h5>
+                            <div class="mb-3">
+                                <strong>Email:</strong> <span id="emailGerado"></span><br>
+                                <strong>Expira em:</strong> <span id="expiraEm"></span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Link do convite:</label>
+                                <div class="input-group">
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="linkConvite" 
+                                        readonly
+                                    >
+                                    <button class="btn btn-outline-secondary" type="button" id="btnCopiarLink">
+                                        <i data-lucide="copy"></i>
+                                        Copiar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="#" id="linkAbrirConvite" target="_blank" class="btn btn-sm btn-info">
+                                    <i data-lucide="external-link"></i>
+                                    Abrir Link
+                                </a>
+                                <button type="button" class="btn btn-sm btn-secondary" id="btnNovoConvite">
+                                    <i data-lucide="plus"></i>
+                                    Gerar Novo Convite
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área de erro -->
+                    <div id="erroConvite" class="mt-4" style="display: none;">
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">
+                                <i data-lucide="alert-circle"></i>
+                                Erro ao Gerar Convite
+                            </h5>
+                            <p id="mensagemErro" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Informações -->
+        <div class="col-lg-4 col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i data-lucide="info"></i>
+                        Como Funciona
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <strong>Digite o email</strong><br>
+                                Informe o email do novo usuário
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <strong>Gere o link</strong><br>
+                                Clique em "Gerar Link de Convite"
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <strong>Compartilhe</strong><br>
+                                Envie o link para o usuário
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <strong>Usuário define senha</strong><br>
+                                O usuário acessa o link e cria sua senha
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted mb-2">
+                            <i data-lucide="shield"></i>
+                            Características de Segurança
+                        </h6>
+                        <ul class="list-unstyled mb-0 small text-muted">
+                            <li>• Links expiram em 30 minutos</li>
+                            <li>• Cada link só pode ser usado uma vez</li>
+                            <li>• Senhas são criptografadas</li>
+                            <li>• Validação rigorosa de tokens</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-subtitle {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-subtitle {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.step-number {
+    width: 24px;
+    height: 24px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content {
+    font-size: 0.875rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formConvite');
+    const btnGerar = document.getElementById('btnGerarConvite');
+    const resultadoDiv = document.getElementById('resultadoConvite');
+    const erroDiv = document.getElementById('erroConvite');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('emailUsuario').value.trim();
+        if (!email) return;
+        
+        // Mostrar loading
+        btnGerar.disabled = true;
+        btnGerar.innerHTML = '<i data-lucide="loader-2"></i> Gerando...';
+        
+        // Esconder resultados anteriores
+        resultadoDiv.style.display = 'none';
+        erroDiv.style.display = 'none';
+        
+        try {
+            const response = await fetch('/api/gerar-convite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.sucesso) {
+                // Mostrar sucesso
+                document.getElementById('emailGerado').textContent = data.email;
+                document.getElementById('expiraEm').textContent = data.expira_em;
+                document.getElementById('linkConvite').value = data.url;
+                document.getElementById('linkAbrirConvite').href = data.url;
+                
+                resultadoDiv.style.display = 'block';
+                
+                // Limpar formulário
+                form.reset();
+                
+            } else {
+                // Mostrar erro
+                document.getElementById('mensagemErro').textContent = data.erro || 'Erro desconhecido';
+                erroDiv.style.display = 'block';
+            }
+            
+        } catch (error) {
+            document.getElementById('mensagemErro').textContent = 'Erro de conexão: ' + error.message;
+            erroDiv.style.display = 'block';
+        }
+        
+        // Restaurar botão
+        btnGerar.disabled = false;
+        btnGerar.innerHTML = '<i data-lucide="send"></i> Gerar Link de Convite';
+        
+        // Reinicializar ícones Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+    
+    // Copiar link
+    document.getElementById('btnCopiarLink').addEventListener('click', async function() {
+        const linkInput = document.getElementById('linkConvite');
+        try {
+            await navigator.clipboard.writeText(linkInput.value);
+            
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check"></i> Copiado!';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-secondary');
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }, 2000);
+            
+        } catch (error) {
+            alert('Erro ao copiar link');
+        }
+    });
+    
+    // Novo convite
+    document.getElementById('btnNovoConvite').addEventListener('click', function() {
+        resultadoDiv.style.display = 'none';
+        erroDiv.style.display = 'none';
+        document.getElementById('emailUsuario').focus();
+    });
+});
+</script>
+{% endblock %}

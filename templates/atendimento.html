@@ -71,7 +71,7 @@
         color: white;
         padding: 1rem 1.5rem;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
     }
 
@@ -170,6 +170,20 @@
         }
     }
 
+    /* Animação para ícone de loading */
+    [data-lucide="loader-2"] {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
 </style>
 
 <!-- Formulário de Pergunta -->
@@ -197,7 +211,7 @@
                             id="botaoGerarResposta"
                             onclick="executarGeracao()"
                         >
-                            🚀 Gerar Resposta Profissional
+                            <i data-lucide="send"></i> Gerar Resposta
                         </button>
                     </div>
 
@@ -263,11 +277,15 @@ function executarGeracao() {
 
     // Mostrar loading
     const botao = document.getElementById('botaoGerarResposta');
-    botao.innerHTML = '⏳ Processando...';
+    botao.innerHTML = '<i data-lucide="loader-2"></i> Processando...';
+    // Reinicializar ícones Lucide
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
     botao.disabled = true;
 
     // Fazer requisição
-    fetch('/gerar_resposta', {
+    fetch('/api/responder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pergunta: pergunta })
@@ -320,9 +338,8 @@ function executarGeracao() {
         document.getElementById('respostasContainer').innerHTML = `
             <div class="response-card fade-in">
                 <div class="response-header">
-                    <h5 style="margin: 0;">📋 Resposta Limpa (Pronta para Copiar)</h5>
-                    <button class="btn-copy" onclick="copiarResposta()">
-                        📋 Copiar Texto
+                    <button class="btn-copy" onclick="copiarResposta()" style="margin-right: auto;">
+                        <i data-lucide="copy"></i>
                     </button>
                 </div>
                 <div class="response-content" id="respostaTexto">
@@ -342,6 +359,11 @@ function executarGeracao() {
 
         // Scroll para resultado
         document.getElementById('respostasContainer').scrollIntoView({ behavior: 'smooth' });
+
+        // Reinicializar ícones Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     })
     .catch(error => {
         console.error('❌ Erro:', error);
@@ -349,7 +371,11 @@ function executarGeracao() {
     })
     .finally(() => {
         // Restaurar botão
-        botao.innerHTML = '🚀 Gerar Resposta Profissional';
+        botao.innerHTML = '<i data-lucide="send"></i> Gerar Resposta';
+        // Reinicializar ícones Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
         botao.disabled = false;
     });
 }
@@ -361,12 +387,16 @@ function copiarResposta() {
             // Feedback visual
             const botaoCopiar = document.querySelector('.btn-copy');
             const textoOriginal = botaoCopiar.innerHTML;
-            botaoCopiar.innerHTML = '✅ Copiado!';
+            botaoCopiar.innerHTML = '<i data-lucide="check"></i>';
             botaoCopiar.style.background = 'rgba(40, 167, 69, 0.8)';
 
             setTimeout(() => {
-                botaoCopiar.innerHTML = textoOriginal;
+                botaoCopiar.innerHTML = '<i data-lucide="copy"></i>';
                 botaoCopiar.style.background = 'rgba(255, 255, 255, 0.2)';
+                // Reinicializar ícones Lucide
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             }, 2000);
         }).catch(err => {
             console.error('Erro ao copiar:', err);
