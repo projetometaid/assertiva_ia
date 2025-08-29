@@ -1,5 +1,21 @@
+:root {
+    --brand-start: #667eea;
+    --brand-end: #764ba2;
+    --brand-bg: #f5f7fb;
+    --sidebar-w: 280px;
+    --sidebar-w-collapsed: 70px;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
 body {
-    background: #f5f7fb;
+    background: var(--brand-bg);
 }
 
 .navbar-brand img {
@@ -70,8 +86,8 @@ body {
     top: 0;
     left: 0;
     height: 100vh;
-    width: 280px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: var(--sidebar-w);
+    background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%);
     transition: all 0.3s ease;
     z-index: 1000;
     overflow: visible;
@@ -86,7 +102,7 @@ body {
 }
 
 .sidebar.collapsed {
-    width: 70px;
+    width: var(--sidebar-w-collapsed);
 }
 
 /* Remover pseudo-elementos que possam vazar */
@@ -218,7 +234,6 @@ body {
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1 !important;
-    vertical-align: baseline !important;
     stroke-width: 1.8 !important;
     flex-shrink: 0 !important;
 }
@@ -378,7 +393,7 @@ body {
 
 /* ===== LAYOUT PRINCIPAL ===== */
 .main-content {
-    margin-left: 290px; /* 280px sidebar + 10px gap */
+    margin-left: var(--sidebar-w);
     transition: margin-left 0.3s ease;
     min-height: 100vh;
     background: transparent;
@@ -389,10 +404,12 @@ body {
     position: relative;
     isolation: isolate;
     overflow: visible;
+    height: auto;
+    padding-bottom: 4rem; /* Espaço extra no final */
 }
 
 .main-content.expanded {
-    margin-left: 80px; /* 70px sidebar + 10px gap */
+    margin-left: var(--sidebar-w-collapsed);
 }
 
 .mobile-toggle {
@@ -429,27 +446,6 @@ body {
 }
 
 /* ===== CARDS E CONTAINERS ===== */
-/* Card branco principal que deve "flutuar" - COMENTADO PARA NÃO INTERFERIR COM CONFIGURAÇÕES */
-/*
-.generator-card,
-.response-card {
-    position: relative;
-    isolation: isolate;
-    z-index: 1;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 12px 30px rgba(18, 21, 26, .12);
-    width: 100%;
-    overflow: visible;
-    margin: 0;
-    border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.generator-card:last-child,
-.response-card:last-child {
-    margin-bottom: 0;
-}
-*/
 
 /* Container de respostas */
 #respostasContainer {
@@ -465,15 +461,22 @@ body {
     box-sizing: border-box;
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .main-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
+/* Garantir estilo consistente dos cards */
+.generator-card, .response-card {
+    background: #fff;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    overflow: hidden;
 }
+
+/* Animação fade-in única */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
 

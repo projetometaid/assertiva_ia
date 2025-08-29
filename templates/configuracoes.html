@@ -4,6 +4,13 @@
 
 {% block content %}
 <style>
+    /* Variáveis CSS para padronização */
+    :root {
+        --brand-start: #667eea;
+        --brand-end: #764ba2;
+        --brand-bg: #f5f7fb;
+    }
+
     /* CSS atualizado - versão 2.0 */
     .generator-card {
         background: white;
@@ -14,7 +21,7 @@
     }
 
     .card-header-custom {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%) !important;
         color: white;
         border-radius: 15px 15px 0 0;
         padding: 1.5rem;
@@ -39,7 +46,7 @@
     }
 
     .btn-generate {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%);
         border: none;
         border-radius: 10px;
         padding: 0.75rem 2rem;
@@ -83,7 +90,7 @@
     }
 
     .response-header {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%) !important;
         color: white;
         padding: 1rem 1.5rem;
         display: flex;
@@ -98,21 +105,7 @@
         color: #495057;
     }
 
-    .info-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
-        border: 1px solid rgba(102, 126, 234, 0.1);
-        margin-bottom: 2rem;
-    }
 
-    .info-header {
-        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-        color: white;
-        border-radius: 15px 15px 0 0;
-        padding: 1.5rem;
-        border: none;
-    }
 
     .step-item {
         display: flex;
@@ -122,13 +115,13 @@
         padding: 0.75rem;
         background: #f8f9fa;
         border-radius: 8px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid var(--brand-start);
     }
 
     .step-number {
         width: 28px;
         height: 28px;
-        background: #667eea;
+        background: var(--brand-start);
         color: white;
         border-radius: 50%;
         display: flex;
@@ -143,22 +136,11 @@
         flex: 1;
     }
 
-    .security-info {
-        background: #e7f3ff;
-        border: 1px solid #b3d9ff;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-top: 1rem;
-    }
 
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
-    }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+
+
+
 
     /* Animação para ícone de loading */
     [data-lucide="loader-2"] {
@@ -168,6 +150,16 @@
     @keyframes spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
+    }
+
+    /* Garantir espaçamento adequado entre cards */
+    .generator-card {
+        margin-bottom: 3rem !important;
+    }
+
+    /* Garantir que o último card tenha espaço suficiente */
+    .generator-card:last-child {
+        margin-bottom: 4rem !important;
     }
 </style>
 
@@ -286,13 +278,10 @@
         </div>
     </div>
 </div>
-        </div>
-    </div>
-</div>
 
 <!-- Card de Informações -->
-<div class="info-card">
-    <div class="info-header">
+<div class="generator-card">
+    <div class="card-header-custom">
         <h5 class="mb-0">Como Funciona</h5>
     </div>
     <div class="card-body-custom">
@@ -328,17 +317,17 @@
             </div>
         </div>
 
-        <div class="security-info">
-            <h6 class="text-primary mb-2">
-                <i data-lucide="shield"></i>
-                Características de Segurança
-            </h6>
-            <ul class="list-unstyled mb-0 small">
-                <li>• Links expiram em 30 minutos</li>
-                <li>• Cada link só pode ser usado uma vez</li>
-                <li>• Senhas são criptografadas</li>
-                <li>• Validação rigorosa de tokens</li>
-            </ul>
+        <div class="step-item">
+            <div class="step-number"><i data-lucide="shield" style="width: 16px; height: 16px;"></i></div>
+            <div class="step-content">
+                <strong>Características de Segurança</strong><br>
+                <small class="text-muted">
+                    • Links expiram em 30 minutos<br>
+                    • Cada link só pode ser usado uma vez<br>
+                    • Senhas são criptografadas<br>
+                    • Validação rigorosa de tokens
+                </small>
+            </div>
         </div>
     </div>
 </div>

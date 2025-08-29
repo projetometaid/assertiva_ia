@@ -18,5 +18,15 @@
     "createdAt": "2025-08-29T12:20:41.601621+00:00",
     "updatedAt": "2025-08-29T12:21:13.042854+00:00",
     "deletedAt": null
+  },
+  "6d3a9ffa-6ae1-448b-baa9-bc61fdb17121": {
+    "id": "6d3a9ffa-6ae1-448b-baa9-bc61fdb17121",
+    "email": "leandro.albertini@certificadocampinas.com.br",
+    "role": "admin",
+    "passwordHash": "06a75b1a313e5943f85b0c19b2cdc56874baabefafcfcf02cfb5dc88083242ff",
+    "name": "Leandro Albertini",
+    "createdAt": "2025-08-29T12:53:06.952085+00:00",
+    "updatedAt": "2025-08-29T12:57:12.413725+00:00",
+    "deletedAt": null
   }
 }

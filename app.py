@@ -874,7 +874,7 @@ def api_gerar_convite():
 
         if user_exists:
             print(f"❌ [CONVITE] Usuário já existe: {email}")
-            return jsonify({'erro': 'Usuário já existe no sistema'}), 400
+            return jsonify({'erro': 'Usuário já cadastrado'}), 400
 
         print(f"🔍 [CONVITE] Usuário não existe, gerando convite...")
         # Gerar convite

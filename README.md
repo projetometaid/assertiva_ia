@@ -1,43 +1,47 @@
-# 🚀 Sistema Local Completo - IA Atendimento Assertiva
+# 🤖 Sistema Assertiva IA - Apoio ao Atendimento
 
 ## 📋 Visão Geral
 
-Este é um sistema completo de atendimento com IA, extraído e otimizado para funcionar 100% localmente. Inclui autenticação segura, interface profissional, integração com OpenAI e base de conhecimento especializada.
+Sistema completo de apoio ao atendimento com IA, gestão de usuários, autenticação JWT e interface moderna. Inclui sistema de convites, RBAC (Role-Based Access Control) e integração com OpenAI.
 
-**🎯 Objetivo:** Fornecer um ambiente de desenvolvimento/teste local para o sistema de IA de atendimento, sem dependências de AWS ou serviços externos.
+**🎯 Objetivo:** Sistema profissional de atendimento com IA, pronto para produção com todas as funcionalidades de segurança e gestão.
 
 ## 🏗️ Arquitetura do Sistema
 
 ### 📁 Estrutura de Arquivos
 ```
-sistema_local_simples/
-├── app_simples.py              # Aplicação Flask principal
+assertiva_ia/
+├── app.py                      # Aplicação Flask principal
 ├── sistema_apoio_atendimento.py # Motor de IA e processamento
-├── .env                        # Variáveis de ambiente (OpenAI)
+├── .env                        # Variáveis de ambiente
+├── .env.example               # Exemplo de configuração
 ├── requirements.txt            # Dependências Python
-├── run_local.sh               # Script de execução automática
 ├── README.md                  # Esta documentação
+├── data/                      # Dados do sistema
+│   ├── users.json            # Base de usuários
+│   └── invites.json          # Convites pendentes
 ├── templates/                 # Templates HTML
 │   ├── base.html             # Template base com navegação
 │   ├── login.html            # Página de login
-│   └── atendimento.html      # Interface principal
+│   ├── atendimento.html      # Interface principal
+│   ├── configuracoes.html    # Gestão de usuários
+│   └── convite.html          # Aceitar convites
 ├── static/                   # Recursos estáticos
 │   ├── css/style.css        # Estilos principais
-│   ├── js/app.js           # JavaScript (desabilitado)
-│   └── assets/             # Imagens e ícones
+│   ├── js/                  # Scripts JavaScript
+│   └── assets/              # Imagens, ícones, etc.
 └── GUIAS_PRATICOS_ASSERTIVA/ # Base de conhecimento (19 guias)
-    ├── 01_acesso_sistema.md
-    ├── 02_boletos.md
-    └── ... (17 outros guias)
+    ├── 00_INDICE_GUIAS_PRATICOS.md
+    └── *.md                 # Guias em Markdown
 ```
 
 ### 🔧 Componentes Principais
 
-1. **Flask Application (`app_simples.py`)**
-   - Servidor web principal
-   - Sistema de autenticação local
-   - Rotas protegidas e APIs
-   - Gerenciamento de sessões
+1. **Flask Application (`app.py`)**
+   - Servidor web com JWT
+   - Autenticação segura
+   - RBAC (admin/atendente)
+   - Sistema de convites
 
 2. **Motor de IA (`sistema_apoio_atendimento.py`)**
    - Integração com OpenAI GPT
@@ -45,9 +49,14 @@ sistema_local_simples/
    - Geração de respostas contextualizadas
 
 3. **Interface Web (`templates/` + `static/`)**
-   - Design responsivo e profissional
-   - Mensagens interativas
-   - Feedback visual em tempo real
+   - Design moderno e responsivo
+   - Gestão de usuários
+   - Sistema de configurações
+
+4. **Base de Conhecimento**
+   - 19 guias práticos em Markdown
+   - Busca semântica automática
+   - Contexto especializado Assertiva
 
 ## 🚀 Instalação e Execução
 
@@ -56,28 +65,22 @@ sistema_local_simples/
 - Acesso à internet (para OpenAI API)
 - Terminal/Command Prompt
 
-### Opção 1: Execução Automática (Recomendada)
+### Execução
 ```bash
-# Navegar para o diretório
-cd sistema_local_simples
-
-# Executar script automático
-./run_local.sh
-```
-
-### Opção 2: Execução Manual
-```bash
-# Navegar para o diretório
-cd sistema_local_simples
-
-# Instalar dependências
+# 1. Instalar dependências
 pip install -r requirements.txt
 
-# Executar aplicação
-python3 app_simples.py
+# 2. Configurar variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas configurações
+
+# 3. Executar o sistema
+python3 app.py
 ```
 
-### Opção 3: Ambiente Virtual (Produção)
+**🌐 Acesso:** http://127.0.0.1:5001
+
+### Ambiente Virtual (Recomendado)
 ```bash
 # Criar ambiente virtual
 python3 -m venv venv
@@ -92,40 +95,40 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 # Executar aplicação
-python app_simples.py
+python3 app.py
 ```
 
 ## 🌐 Acesso ao Sistema
 
 ### URLs de Acesso
-- **Principal:** http://localhost:8080
-- **Login:** http://localhost:8080/login
-- **Atendimento:** http://localhost:8080/atendimento
+- **Principal:** http://127.0.0.1:5001
+- **Login:** http://127.0.0.1:5001/login
+- **Atendimento:** http://127.0.0.1:5001/atendimento
+- **Configurações:** http://127.0.0.1:5001/configuracoes
 
-### 🔐 Credenciais de Acesso
-- **Email:** `leandro.albertini@assertivasolucoes.com.br`
-- **Senha:** `@Certificado123`
+### 🔐 Credenciais Iniciais
+- **Email:** `admin@assertiva.local`
+- **Senha:** `admin123`
 
-### 🔑 Configuração de Usuários
-Os usuários estão definidos em `app_simples.py` na variável `USERS_DB`:
-```python
-USERS_DB = {
-    "leandro.albertini@assertivasolucoes.com.br": {
-        "password_hash": "d9af2ff511d8d1fdbcc4d2703f9cbeced5ed5e7e3b209bcececc4ea171aeb8ef",
-        "name": "Leandro Albertini",
-        "role": "admin"
-    }
-}
-```
+### 🔑 Gestão de Usuários
+- Sistema completo de gestão via interface web
+- Criação de convites por link
+- Roles: admin e atendente
+- Dados armazenados em `data/users.json`
 
 ## ✨ Funcionalidades Implementadas
 
-### 🔐 Sistema de Autenticação
-- **Login Seguro:** Email + senha com hash SHA256
-- **Sessões Persistentes:** 8 horas de duração
-- **Tokens Únicos:** UUID para cada sessão
-- **Validação Rigorosa:** Verificação em todas as rotas
-- **Logout Seguro:** Limpeza completa de sessão
+### 🔐 Sistema de Autenticação JWT
+- **JWT Tokens:** Access + Refresh tokens com httpOnly cookies
+- **RBAC:** Controle de acesso baseado em roles (admin/atendente)
+- **Sessões Seguras:** Tokens com expiração configurável
+- **Logout Seguro:** Invalidação completa de tokens
+
+### 👥 Gestão de Usuários
+- **Sistema de Convites:** Criação de links de convite únicos
+- **Gestão Completa:** Listar, editar roles, excluir usuários
+- **Exclusão Segura:** Soft delete com confirmação
+- **Interface Admin:** Painel completo de administração
 
 ### 🤖 Motor de IA
 - **OpenAI Integration:** GPT para geração de respostas
@@ -133,17 +136,17 @@ USERS_DB = {
 - **Processamento Contextual:** Busca relevante por similaridade
 - **Respostas Personalizadas:** Adaptadas ao contexto Assertiva
 
-### 🎨 Interface de Usuário
+### 🎨 Interface Moderna
 - **Design Responsivo:** Funciona em desktop e mobile
-- **Mensagens Elegantes:** Feedback visual sem pop-ups
-- **Animações Suaves:** Transições CSS profissionais
+- **Interface Intuitiva:** Navegação clara e organizada
+- **Feedback Visual:** Mensagens de status em tempo real
 - **Atalhos de Teclado:** Ctrl+Enter para gerar resposta
 
 ### 🛡️ Segurança Avançada
-- **Anti-Cache:** Prevenção de acesso após logout
 - **Headers Seguros:** Proteção contra XSS e clickjacking
-- **Validação de Sessão:** Verificação contínua de autenticidade
-- **Proteção de Rotas:** Decorators para controle de acesso
+- **Validação Rigorosa:** Verificação em todas as rotas
+- **Proteção CSRF:** Cookies SameSite e httpOnly
+- **Criptografia:** Senhas com hash SHA256
 
 ## 🔧 Dependências Técnicas
 
@@ -162,7 +165,7 @@ OPENAI_API_KEY=sk-...  # Chave da API OpenAI (já configurada)
 ## 🎯 Fluxo de Uso Completo
 
 ### 1. Acesso Inicial
-1. Abrir http://localhost:8080
+1. Abrir http://127.0.0.1:5001
 2. Sistema redireciona para /login
 3. Inserir credenciais válidas
 4. Redirecionamento para /atendimento
@@ -268,24 +271,20 @@ response.headers['X-XSS-Protection'] = '1; mode=block'
    - Procurar erros JavaScript no console
 
 ### Logs de Debug
-Para ativar logs detalhados, modificar `app_simples.py`:
+Para ativar logs detalhados, modificar `app.py`:
 ```python
-app.run(debug=True, host='0.0.0.0', port=8080)
+app.run(debug=True, host='0.0.0.0', port=5001)
 ```
 
 ## 🚀 Customização e Extensão
 
 ### Adicionar Novos Usuários
-Editar `USERS_DB` em `app_simples.py`:
-```python
-USERS_DB = {
-    "novo@email.com": {
-        "password_hash": hashlib.sha256("nova_senha".encode()).hexdigest(),
-        "name": "Novo Usuario",
-        "role": "user"
-    }
-}
-```
+Use o sistema de convites via interface web:
+1. Acesse http://127.0.0.1:5001/configuracoes
+2. Clique em "Gerar Link de Convite"
+3. Insira o email do novo usuário
+4. Envie o link gerado para o usuário
+5. O usuário define sua própria senha
 
 ### Modificar Base de Conhecimento
 1. Adicionar arquivos `.md` em `GUIAS_PRATICOS_ASSERTIVA/`
@@ -298,7 +297,7 @@ USERS_DB = {
 - **JavaScript:** Adicionar scripts em `templates/base.html`
 
 ### Configurar Porta Diferente
-Modificar `app_simples.py`:
+Modificar `app.py`:
 ```python
 app.run(debug=True, host='0.0.0.0', port=5000)  # Nova porta
 ```
@@ -361,10 +360,10 @@ Este README foi escrito especificamente para permitir que outras IAs:
 4. **Estendam** funcionalidades conforme necessário
 
 ### Informações de Contato
-- **Sistema original:** Assertiva Soluções
-- **Versão local:** Extraída e otimizada para desenvolvimento
+- **Sistema:** Assertiva IA - Apoio ao Atendimento
+- **Versão:** Sistema completo com JWT e gestão de usuários
 - **Última atualização:** Agosto 2025
 
 ---
 
-**🎉 Sistema pronto para uso! Execute `./run_local.sh` e acesse http://localhost:8080**
+**🎉 Sistema pronto para uso! Execute `python3 app.py` e acesse http://127.0.0.1:5001**
