@@ -1,0 +1,22 @@
+{
+  "system-user-00000000-0000-0000-0000-000000000000": {
+    "id": "system-user-00000000-0000-0000-0000-000000000000",
+    "email": "system@assertiva.internal",
+    "role": "system",
+    "passwordHash": null,
+    "name": "Sistema",
+    "createdAt": "2025-08-29T12:20:41.601451+00:00",
+    "updatedAt": "2025-08-29T12:20:41.601582+00:00",
+    "deletedAt": null
+  },
+  "10018eac-5b20-4913-b5b2-78b2a75804ad": {
+    "id": "10018eac-5b20-4913-b5b2-78b2a75804ad",
+    "email": "admin@assertiva.local",
+    "role": "admin",
+    "passwordHash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "name": "Administrador",
+    "createdAt": "2025-08-29T12:20:41.601621+00:00",
+    "updatedAt": "2025-08-29T12:21:13.042854+00:00",
+    "deletedAt": null
+  }
+}

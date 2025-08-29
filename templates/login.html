@@ -159,29 +159,77 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             const loginBtn = document.getElementById('loginBtn');
             const loginText = loginBtn.querySelector('.login-text');
             const loading = loginBtn.querySelector('.loading');
-            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
             // Mostrar loading
             loginText.textContent = 'Autenticando...';
             loading.classList.add('show');
             loginBtn.disabled = true;
-            
-            // Se houver erro, restaurar o botão após 3 segundos
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.sucesso) {
+                    // Login bem-sucedido, redirecionar
+                    window.location.href = '/atendimento';
+                } else {
+                    // Mostrar erro
+                    showError(data.erro || 'Erro no login');
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                showError('Erro de conexão. Tente novamente.');
+            } finally {
+                // Restaurar botão
+                loginText.textContent = 'Entrar';
+                loading.classList.remove('show');
+                loginBtn.disabled = false;
+            }
+        });
+
+        function showError(message) {
+            // Remove alertas existentes
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Criar novo alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            // Inserir antes do formulário
+            const form = document.getElementById('loginForm');
+            form.parentNode.insertBefore(alertDiv, form);
+
+            // Auto-remover após 5 segundos
             setTimeout(() => {
-                if (loginBtn.disabled) {
-                    loginText.textContent = 'Entrar';
-                    loading.classList.remove('show');
-                    loginBtn.disabled = false;
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
                 }
             }, 5000);
-        });
-        
+        }
+
         // Auto-focus no campo email
         document.getElementById('email').focus();
-        
+
         // Limpar mensagens de erro após 5 segundos
         setTimeout(() => {
             const alerts = document.querySelectorAll('.alert');

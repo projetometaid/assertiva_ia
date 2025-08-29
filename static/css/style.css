@@ -429,7 +429,8 @@ body {
 }
 
 /* ===== CARDS E CONTAINERS ===== */
-/* Card branco principal que deve "flutuar" */
+/* Card branco principal que deve "flutuar" - COMENTADO PARA NÃO INTERFERIR COM CONFIGURAÇÕES */
+/*
 .generator-card,
 .response-card {
     position: relative;
@@ -448,6 +449,7 @@ body {
 .response-card:last-child {
     margin-bottom: 0;
 }
+*/
 
 /* Container de respostas */
 #respostasContainer {
