@@ -9,6 +9,7 @@ import json
 import hashlib
 import jwt
 import secrets
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Adicionar o diretório pai ao path para importar o sistema de apoio
 sys.path.append(str(Path(__file__).parent.parent))
@@ -30,17 +31,20 @@ JWT_REFRESH_TTL_DAYS = int(os.environ.get('JWT_REFRESH_TTL_DAYS', '7'))
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@assertiva.local')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
-# Sistema de usuários
-USERS_FILE = 'data/users.json'
+# Paths robustos
+BASE_DIR = Path(__file__).parent
+DATA_DIR = BASE_DIR / "data"
+USERS_FILE = DATA_DIR / "users.json"
+INVITES_FILE = DATA_DIR / "invites.json"
 SYSTEM_USER_ID = 'system-user-00000000-0000-0000-0000-000000000000'
 
 def _hash_password(password):
-    """Gera hash SHA256 da senha"""
+    """Gera hash SHA256 da senha (legacy)"""
     return hashlib.sha256(password.encode()).hexdigest()
 
 def ensure_data_dir():
     """Garante que o diretório data existe"""
-    os.makedirs('data', exist_ok=True)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 def load_users():
     """Carrega usuários do arquivo JSON"""
@@ -86,7 +90,7 @@ def create_admin_seed():
             'id': admin_id,
             'email': ADMIN_EMAIL,
             'role': 'admin',
-            'passwordHash': _hash_password(ADMIN_PASSWORD),
+            'passwordHash': generate_password_hash(ADMIN_PASSWORD),
             'name': 'Administrador',
             'createdAt': datetime.now(timezone.utc).isoformat(),
             'updatedAt': datetime.now(timezone.utc).isoformat(),
@@ -196,7 +200,6 @@ create_admin_seed()
 USERS_DB = load_users()
 
 # Sistema de convites
-INVITES_FILE = 'data/invites.json'
 INVITE_TTL_MINUTES = 30
 
 def load_invites():
@@ -312,7 +315,7 @@ def use_invite_token(token, password):
             'id': user_id,
             'email': email,
             'role': 'atendente',  # Role padrão
-            'passwordHash': _hash_password(password),
+            'passwordHash': generate_password_hash(password),
             'name': email.split('@')[0].title(),
             'createdAt': datetime.now(timezone.utc).isoformat(),
             'updatedAt': datetime.now(timezone.utc).isoformat(),
@@ -329,128 +332,11 @@ def use_invite_token(token, password):
 
 
 
-def login_required(f):
-    """Decorator para rotas que requerem login"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
-            flash('Você precisa fazer login para acessar esta página.', 'warning')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
 
-def admin_required(f):
-    """Decorator para rotas que requerem privilégios de admin"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
-            flash('Você precisa fazer login para acessar esta página.', 'warning')
-            return redirect(url_for('login'))
-
-        user = session.get('user')
-        if user.get('role') != 'admin':
-            flash('Você não tem permissão para acessar esta página.', 'error')
-            return redirect(url_for('index'))
-
-        return f(*args, **kwargs)
-    return decorated_function
-
-def get_current_user():
-    """Retorna dados do usuário atual da sessão"""
-    return session.get('user')
-
-def is_admin():
-    """Verifica se o usuário atual é admin"""
-    user = get_current_user()
-    return user and user.get('role') == 'admin'
 
 # Sistema de autenticação sempre disponível
 auth_system = True
 print("✅ Sistema de autenticação DIRETO carregado com sucesso!")
-
-# Middleware de segurança
-def no_cache(f):
-    """Decorator para bloquear cache em páginas protegidas"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        response = make_response(f(*args, **kwargs))
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        response.headers['Surrogate-Control'] = 'no-store'
-        return response
-    return decorated_function
-
-def check_session_expiry():
-    """Verifica se a sessão expirou e renova se ativa"""
-    if 'user' in session:
-        # Marcar sessão como permanente para usar o timeout configurado
-        session.permanent = True
-
-        # Verificar última atividade
-        last_activity = session.get('last_activity')
-        if last_activity:
-            last_activity = datetime.fromisoformat(last_activity)
-            if datetime.now() - last_activity > FOUR_HOURS:
-                session.clear()
-                return False
-
-        # Atualizar última atividade
-        session['last_activity'] = datetime.now().isoformat()
-        return True
-    return False
-
-def require_auth_with_security(f):
-    """Decorator combinado: autenticação + no-cache + verificação de sessão"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Verificar expiração da sessão
-        if not check_session_expiry():
-            flash('Sua sessão expirou. Faça login novamente.', 'warning')
-            return redirect(url_for('login'))
-
-        # Verificar autenticação
-        if 'user' not in session:
-            flash('Você precisa fazer login para acessar esta página.', 'warning')
-            return redirect(url_for('login'))
-
-        # Aplicar no-cache
-        response = make_response(f(*args, **kwargs))
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        response.headers['Surrogate-Control'] = 'no-store'
-        return response
-    return decorated_function
-
-def require_admin_with_security(f):
-    """Decorator para rotas que requerem admin + segurança"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Verificar expiração da sessão
-        if not check_session_expiry():
-            flash('Sua sessão expirou. Faça login novamente.', 'warning')
-            return redirect(url_for('login'))
-
-        # Verificar autenticação
-        if 'user' not in session:
-            flash('Você precisa fazer login para acessar esta página.', 'warning')
-            return redirect(url_for('login'))
-
-        # Verificar privilégios de admin
-        user = session.get('user')
-        if user.get('role') != 'admin':
-            flash('Você não tem permissão para acessar esta página.', 'error')
-            return redirect(url_for('atendimento'))
-
-        # Aplicar no-cache
-        response = make_response(f(*args, **kwargs))
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, proxy-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        response.headers['Surrogate-Control'] = 'no-store'
-        return response
-    return decorated_function
 
 app = Flask(__name__)
 
@@ -466,11 +352,15 @@ app.permanent_session_lifetime = FOUR_HOURS
 
 # Configurações de cookie seguro
 is_production = os.environ.get('FLASK_ENV') == 'production'
-has_https = True  # HTTPS agora está configurado
+
+def set_cookie(resp, name, value, max_age):
+    """Define cookie com configurações condicionais de segurança"""
+    resp.set_cookie(name, value, max_age=max_age, httponly=True, secure=is_production, samesite='Lax')
+
 app.config.update(
-    SESSION_COOKIE_SECURE=has_https,  # HTTPS está disponível
-    SESSION_COOKIE_HTTPONLY=True,  # Não acessível via JavaScript
-    SESSION_COOKIE_SAMESITE='Lax',  # Proteção CSRF
+    SESSION_COOKIE_SECURE=is_production,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_NAME='assertiva_session'
 )
 
@@ -503,7 +393,7 @@ def auth_login():
                 user = user_data
                 break
 
-        if not user or user.get('passwordHash') != _hash_password(password):
+        if not user or not check_password_hash(user.get('passwordHash', ''), password):
             return jsonify({'erro': 'Email ou senha inválidos'}), 401
 
         # Gerar tokens
@@ -522,20 +412,8 @@ def auth_login():
         }))
 
         # Configurar cookies httpOnly
-        response.set_cookie(
-            'access_token', access_token,
-            max_age=JWT_ACCESS_TTL_MIN * 60,
-            httponly=True,
-            secure=True,
-            samesite='Lax'
-        )
-        response.set_cookie(
-            'refresh_token', refresh_token,
-            max_age=JWT_REFRESH_TTL_DAYS * 24 * 60 * 60,
-            httponly=True,
-            secure=True,
-            samesite='Lax'
-        )
+        set_cookie(response, 'access_token', access_token, JWT_ACCESS_TTL_MIN * 60)
+        set_cookie(response, 'refresh_token', refresh_token, JWT_REFRESH_TTL_DAYS * 24 * 60 * 60)
 
         print(f"✅ Login JWT realizado: {user['email']}")
         return response
@@ -568,13 +446,7 @@ def auth_refresh():
         )
 
         response = make_response(jsonify({'sucesso': True}))
-        response.set_cookie(
-            'access_token', access_token,
-            max_age=JWT_ACCESS_TTL_MIN * 60,
-            httponly=True,
-            secure=True,
-            samesite='Lax'
-        )
+        set_cookie(response, 'access_token', access_token, JWT_ACCESS_TTL_MIN * 60)
 
         return response
 
@@ -745,6 +617,10 @@ def list_users():
 def update_user(user_id):
     """Atualizar role do usuário"""
     try:
+        # Blindagem: não permitir operações no usuário do sistema
+        if user_id in (SYSTEM_USER_ID,):
+            return jsonify({'erro': 'Operação não permitida'}), 400
+
         data = request.get_json()
         new_role = data.get('role')
 
@@ -804,6 +680,10 @@ def reassign_or_anonymize(user_id):
 def delete_user(user_id):
     """Exclusão segura de usuário"""
     try:
+        # Blindagem: não permitir operações no usuário do sistema
+        if user_id in (SYSTEM_USER_ID,):
+            return jsonify({'erro': 'Operação não permitida'}), 400
+
         data = request.get_json()
         confirmation = data.get('confirmation', '')
 
