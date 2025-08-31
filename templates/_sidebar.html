@@ -1,68 +1,71 @@
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
     <!-- Header -->
-    <div class="sidebar-header">
-        <div class="d-flex align-items-center">
+    <header class="sidebar-header">
+        <div class="sidebar-brand" role="button" tabindex="0" aria-label="Logo Assertiva" title="Sistema Assertiva">
             <div class="sidebar-logo">
-                <img src="{{ url_for('static', filename='assets/logos/logo _assertiva.png') }}" alt="Assertiva" />
+                <img src="{{ url_for('static', filename='assets/logos/logo _assertiva.png') }}" alt="Logo Assertiva" />
             </div>
-            <span class="sidebar-title">Assertiva</span>
         </div>
-        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Collapse Sidebar">
-            <i data-lucide="chevron-left" class="lucide-icon"></i>
-            <i class="fas fa-chevron-left fallback-icon" style="display: none;"></i>
+        <button class="sidebar-toggle" id="sidebarToggleBtn" type="button" aria-label="Recolher menu lateral" title="Recolher menu" style="display: none;">
+            <i data-lucide="chevron-left" aria-hidden="true"></i>
+            <span class="sr-only">Recolher menu</span>
         </button>
-    </div>
+    </header>
 
     <!-- Navigation -->
-    <nav class="sidebar-nav" role="navigation">
-        <div class="nav-item">
-            <a href="{{ url_for('web.atendimento') }}" class="nav-link {{ 'active' if request.endpoint == 'web.atendimento' }}">
-                <div class="nav-icon">
-                    <i data-lucide="messages-square" class="lucide-icon"></i>
-                    <i class="fas fa-comments fallback-icon" style="display: none;"></i>
-                </div>
-                <span class="nav-text">Atendimento</span>
-            </a>
-        </div>
+    <nav class="sidebar-nav" role="navigation" aria-label="Menu de navegação">
+        <ul class="nav-list" role="menubar">
+            <li class="nav-item" role="none">
+                <a href="{{ url_for('web.atendimento') }}"
+                   class="nav-link {{ 'active' if request.endpoint == 'web.atendimento' }}"
+                   role="menuitem"
+                   aria-current="{{ 'page' if request.endpoint == 'web.atendimento' else 'false' }}"
+                   title="Sistema de Atendimento">
+                    <div class="nav-icon" aria-hidden="true">
+                        <i data-lucide="message-square"></i>
+                    </div>
+                    <span class="nav-text">Atendimento</span>
+                </a>
+            </li>
 
-        {% if user and user.role == 'admin' %}
-        <div class="nav-item">
-            <a href="{{ url_for('web.configuracoes') }}" class="nav-link {{ 'active' if request.endpoint == 'web.configuracoes' }}">
-                <div class="nav-icon">
-                    <i data-lucide="settings" class="lucide-icon"></i>
-                    <i class="fas fa-cog fallback-icon" style="display: none;"></i>
-                </div>
-                <span class="nav-text">Configurações</span>
-            </a>
-        </div>
-        {% endif %}
+            {% if user and user.role == 'admin' %}
+            <li class="nav-item" role="none">
+                <a href="{{ url_for('web.configuracoes') }}"
+                   class="nav-link {{ 'active' if request.endpoint == 'web.configuracoes' }}"
+                   role="menuitem"
+                   aria-current="{{ 'page' if request.endpoint == 'web.configuracoes' else 'false' }}"
+                   title="Configurações do Sistema">
+                    <div class="nav-icon" aria-hidden="true">
+                        <i data-lucide="settings"></i>
+                    </div>
+                    <span class="nav-text">Configurações</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
     </nav>
 
     <!-- Footer with Logout -->
-    <div class="sidebar-footer">
+    <footer class="sidebar-footer">
         {% if user %}
             <div class="nav-item">
-                <a href="#" class="nav-link logout-link" onclick="fazerLogout()"
-                   style="cursor: pointer; background: rgba(255,0,0,0.1); border: 1px solid rgba(255,0,0,0.3); border-radius: 8px; transition: all 0.3s ease;"
-                   onmouseover="this.style.background='rgba(255,0,0,0.2)'"
-                   onmouseout="this.style.background='rgba(255,0,0,0.1)'">
-                    <div class="nav-icon">
-                        <i data-lucide="log-out" class="lucide-icon"></i>
-                        <i class="fas fa-sign-out-alt fallback-icon" style="display: none;"></i>
+                <button type="button" class="nav-link logout-link" onclick="fazerLogout()" title="Sair do Sistema" aria-label="Fazer logout">
+                    <div class="nav-icon" aria-hidden="true">
+                        <i data-lucide="log-out"></i>
                     </div>
                     <span class="nav-text">Sair</span>
-                </a>
+                </button>
             </div>
         {% else %}
             <div class="nav-item">
-                <div class="nav-link" style="opacity: 0.7;">
-                    <div class="nav-icon">
-                        <i data-lucide="home"></i>
+                <div class="nav-link nav-link-disabled" title="Modo Local" aria-label="Modo de desenvolvimento local">
+                    <div class="nav-icon" aria-hidden="true">
+                        <i data-lucide="monitor"></i>
                     </div>
-                    <span class="nav-text">Versão Local</span>
+                    <span class="nav-text">Modo Local</span>
                 </div>
             </div>
         {% endif %}
-    </div>
-</div>
+    </footer>
+</aside>

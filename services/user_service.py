@@ -77,11 +77,17 @@ def accept_invite(token: str, password: str, name: str = None) -> Tuple[bool, Op
 def change_user_role(current_user_id: str, target_user_id: str, new_role: str) -> Tuple[bool, Optional[str]]:
     """
     Altera role de usuário
-    
+
     Returns:
         Tuple[success, error_message]
     """
     try:
+        # Verificar se é o usuário protegido
+        from stores.user_store import get_user_by_id
+        target_user = get_user_by_id(target_user_id)
+        if target_user and target_user.get('email') == 'leandro.albertini@assertivasolucoes.com.br':
+            return False, "Este usuário está protegido e não pode ter o perfil alterado"
+
         # Verificar permissões
         can_change, error = can_change_role(current_user_id, target_user_id, new_role)
         if not can_change:
@@ -101,19 +107,25 @@ def change_user_role(current_user_id: str, target_user_id: str, new_role: str) -
 def delete_user_safe(current_user_id: str, target_user_id: str, confirmation: str) -> Tuple[bool, Optional[str]]:
     """
     Exclui usuário com segurança
-    
+
     Returns:
         Tuple[success, error_message]
     """
     try:
+        # Verificar se é o usuário protegido
+        from stores.user_store import get_user_by_id
+        target_user = get_user_by_id(target_user_id)
+        if target_user and target_user.get('email') == 'leandro.albertini@assertivasolucoes.com.br':
+            return False, "Este usuário está protegido e não pode ser excluído"
+
         # Verificar permissões
         can_modify, error = can_modify_user(current_user_id, target_user_id)
         if not can_modify:
             return False, error
-        
-        # Verificar confirmação
-        if confirmation != "EXCLUIR":
-            return False, "Confirmação inválida. Digite 'EXCLUIR' para confirmar"
+
+        # Verificar confirmação (agora aceita o email como confirmação)
+        if target_user and confirmation != target_user.get('email'):
+            return False, "Email de confirmação não confere"
         
         # Reatribuir dados antes da exclusão
         if not reassign_or_anonymize(target_user_id, SYSTEM_USER_ID):

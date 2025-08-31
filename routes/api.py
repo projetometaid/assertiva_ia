@@ -87,7 +87,14 @@ def gerar_convite():
             return jsonify({'erro': error}), 400
         
         # Gerar URL do convite
+        # Usar HTTPS em produção
         base_url = request.url_root.rstrip('/')
+        if request.headers.get('X-Forwarded-Proto') == 'https' or request.is_secure:
+            base_url = base_url.replace('http://', 'https://')
+        elif 'localhost' not in base_url and '127.0.0.1' not in base_url:
+            # Em produção, sempre usar HTTPS
+            base_url = base_url.replace('http://', 'https://')
+
         invite_url = f"{base_url}/convite?token={token}"
         
         print(f"✅ Convite gerado para: {email}")

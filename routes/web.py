@@ -1,7 +1,7 @@
 """
 Rotas HTML (páginas web)
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, make_response, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, make_response, jsonify
 
 from security.auth import require_auth, require_role, get_current_user
 from security.cookies import clear_auth_cookies
@@ -62,13 +62,11 @@ def convite():
     """Página para aceitar convite"""
     token = request.args.get('token')
     if not token:
-        flash('Token de convite não encontrado', 'error')
         return redirect(url_for('web.login'))
 
     # Validar token
     valid, email, error = validate_invite_token(token)
     if not valid:
-        flash(f'Convite inválido: {error}', 'error')
         return redirect(url_for('web.login'))
 
     return render_template('convite.html', token=token, email=email)

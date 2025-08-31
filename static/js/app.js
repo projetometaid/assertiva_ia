@@ -1,18 +1,20 @@
 /* app.js - JavaScript global do Sistema Assertiva */
 
-// === SIDEBAR TOGGLE ===
+// === SIDEBAR TOGGLE DESABILITADO ===
 function toggleSidebar() {
+    console.log('🚫 Toggle da sidebar foi DESABILITADO para manter sempre visível');
+    // Função desabilitada - sidebar sempre expandida
+    return false;
+}
+
+// Função para expandir sidebar automaticamente quando clicar em item do menu
+function expandSidebarOnNavClick() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
 
-    if (sidebar && mainContent) {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-
-        // Para mobile
-        if (window.innerWidth <= 768) {
-            sidebar.classList.toggle('show');
-        }
+    if (sidebar && mainContent && sidebar.classList.contains('collapsed')) {
+        sidebar.classList.remove('collapsed');
+        mainContent.classList.remove('expanded');
     }
 }
 
@@ -34,38 +36,36 @@ document.addEventListener('click', function(event) {
 function fazerLogout() {
     console.log('🚪 Iniciando logout...');
 
-    if (confirm('Tem certeza que deseja sair?')) {
-        // Feedback visual imediato
-        const logoutLink = document.querySelector('.logout-link');
-        if (logoutLink) {
-            logoutLink.innerHTML = '<div class="nav-icon">⏳</div><span class="nav-text">Saindo...</span>';
-            logoutLink.style.pointerEvents = 'none';
-        }
-
-        // Desabilitar temporariamente os scripts de segurança
-        window.logoutInProgress = true;
-
-        // Limpar dados do navegador imediatamente
-        if (typeof(Storage) !== "undefined") {
-            localStorage.clear();
-            sessionStorage.clear();
-        }
-
-        // Fazer logout via POST
-        console.log('🌐 Fazendo logout via POST...');
-        fetch('/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(() => {
-            console.log('✅ Logout realizado, redirecionando...');
-            window.location.href = '/login';
-        }).catch(() => {
-            console.log('⚠️ Erro no logout, redirecionando mesmo assim...');
-            window.location.href = '/login';
-        });
+    // Feedback visual imediato
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        logoutLink.innerHTML = '<div class="nav-icon">⏳</div><span class="nav-text">Saindo...</span>';
+        logoutLink.style.pointerEvents = 'none';
     }
+
+    // Desabilitar temporariamente os scripts de segurança
+    window.logoutInProgress = true;
+
+    // Limpar dados do navegador imediatamente
+    if (typeof(Storage) !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+    }
+
+    // Fazer logout via POST
+    console.log('🌐 Fazendo logout via POST...');
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(() => {
+        console.log('✅ Logout realizado, redirecionando...');
+        window.location.href = '/login';
+    }).catch(() => {
+        console.log('⚠️ Erro no logout, redirecionando mesmo assim...');
+        window.location.href = '/login';
+    });
 }
 
 // === SECURITY SCRIPTS ===
@@ -121,12 +121,15 @@ if (window.history && window.history.pushState) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Sistema Assertiva carregado');
 
-    // Toggle sidebar (se já não tiver)
-    const btn = document.getElementById("sidebarToggle");
-    const sidebar = document.getElementById("sidebar");
-    if (btn && sidebar) {
-        btn.addEventListener("click", () => sidebar.classList.toggle("collapsed"));
-    }
+    // Event listeners do toggle foram REMOVIDOS para manter sidebar sempre visível
+    console.log('🚫 Event listeners do toggle foram DESABILITADOS');
+    console.log('✅ Sidebar permanecerá sempre expandida');
+
+    // Adicionar event listeners para expandir sidebar ao clicar em itens do menu
+    const navLinks = document.querySelectorAll('.sidebar .nav-link:not(.logout-link):not(.nav-link-disabled)');
+    navLinks.forEach(link => {
+        link.addEventListener('click', expandSidebarOnNavClick);
+    });
 
     // Init Lucide - removido para evitar conflito com base.html
     // A inicialização do Lucide agora é feita apenas no base.html

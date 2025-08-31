@@ -3,34 +3,47 @@
 {% block title %}Atendimento - Sistema Apoio Assertiva{% endblock %}
 
 {% block content %}
-<div class="ui-card">
-  <div class="ui-card__header">Atendimento</div>
-  <div class="ui-card__body">
-    <label class="ui-label" for="perguntaInput">Pergunta do Cliente:</label>
-    <textarea class="ui-input" id="perguntaInput" rows="4" placeholder="Cole aqui a pergunta do cliente..."></textarea>
-    <small class="u-text-muted">Dica: Use Ctrl+Enter para enviar rapidamente</small>
-    <div class="ui-actions">
-      <button type="button" class="ui-btn ui-btn--primary" id="botaoGerarResposta" onclick="executarGeracao()">
-        <i data-lucide="send" class="lucide-icon"></i>
-        <i class="fas fa-paper-plane fallback-icon" style="display: none;"></i>
-        Gerar Resposta
-      </button>
+<div class="atendimento-container">
+  <div class="pergunta-card">
+    <div class="card-header">
+      <i data-lucide="message-square"></i>
+      <h3 class="card-header-title">Pergunta do Cliente</h3>
     </div>
+    <div class="card-body">
+      <textarea class="pergunta-textarea" id="perguntaInput" rows="5"
+                placeholder="Cole aqui a pergunta do cliente ou descreva a situação que precisa de apoio..."></textarea>
+
+      <div class="ui-actions">
+        <button type="button" class="ui-btn ui-btn--primary ui-btn--lg" id="botaoGerarResposta" onclick="executarGeracao()">
+          <i data-lucide="send"></i>
+          Gerar Resposta Inteligente
+        </button>
+      </div>
+    </div>
+
     <div id="mensagemContainer" style="display:none;">
-      <div class="alert alert-danger" id="mensagemAlert" role="alert">
-        <span id="mensagemTexto"></span>
+      <div class="alert" id="mensagemAlert" role="alert">
+        <div class="alert-icon">
+          <i data-lucide="alert-circle"></i>
+        </div>
+        <div class="alert-content">
+          <div class="alert-message" id="mensagemTexto"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Loading -->
-<div id="loading" style="display:none;">
-  <div class="alert alert-success">Processando...</div>
-</div>
+  <!-- Loading -->
+  <div id="loading" style="display:none;">
+    <div class="loading-container">
+      <i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i>
+      <span class="loading-text">Processando sua pergunta...</span>
+    </div>
+  </div>
 
-<!-- Respostas -->
-<div id="respostasContainer"></div>
+  <!-- Respostas -->
+  <div id="respostasContainer"></div>
+</div>
 
 {% endblock %}
 
@@ -137,8 +150,13 @@ function executarGeracao() {
         document.getElementById('respostasContainer').innerHTML = `
             <div class="response-card fade-in">
                 <div class="response-header">
-                    <button class="btn-copy" onclick="copiarResposta()" style="margin-right: auto;">
+                    <div class="response-title">
+                        <i data-lucide="check-circle"></i>
+                        <span>Resposta Gerada</span>
+                    </div>
+                    <button class="btn-copy" onclick="copiarResposta()">
                         <i data-lucide="copy"></i>
+                        <span>Copiar</span>
                     </button>
                 </div>
                 <div class="response-content" id="respostaTexto">

@@ -4,7 +4,7 @@ Sistema de autenticação JWT
 import jwt
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from flask import request, jsonify, redirect, url_for, flash
+from flask import request, jsonify, redirect, url_for
 
 from config.settings import JWT_SECRET, JWT_ACCESS_TTL_MIN, JWT_REFRESH_TTL_DAYS
 
@@ -83,7 +83,6 @@ def require_auth(f):
             if request.path.startswith('/api/'):
                 return jsonify({'erro': 'Token de acesso inválido ou expirado'}), 401
             else:
-                flash('Você precisa fazer login para acessar esta página.', 'warning')
                 return redirect(url_for('web.login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -99,14 +98,12 @@ def require_role(required_role):
                 if request.path.startswith('/api/'):
                     return jsonify({'erro': 'Token de acesso inválido ou expirado'}), 401
                 else:
-                    flash('Você precisa fazer login para acessar esta página.', 'warning')
                     return redirect(url_for('web.login'))
             
             if user.get('role') != required_role:
                 if request.path.startswith('/api/'):
                     return jsonify({'erro': 'Permissão insuficiente'}), 403
                 else:
-                    flash('Você não tem permissão para acessar esta página.', 'error')
                     return redirect(url_for('web.atendimento'))
             
             return f(*args, **kwargs)

@@ -103,6 +103,12 @@ except Exception as e:
 # Criar aplicação
 app = create_app()
 
+# Rota de teste para Lucide
+@app.route('/teste-lucide')
+def teste_lucide():
+    from flask import render_template
+    return render_template('teste_lucide.html')
+
 # Adicionar rota de resposta IA
 @app.route('/api/responder', methods=['POST'])
 def api_responder():

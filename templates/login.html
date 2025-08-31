@@ -15,43 +15,33 @@
         </div>
 
         <div class="login-body">
-            <form id="loginForm" method="POST">
-                <div class="mb-3">
+            <form id="loginForm" method="POST" class="login-form">
+                <div class="login-field">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" required
                            placeholder="seu.email@assertivasolucoes.com.br">
                 </div>
 
-                <div class="mb-3">
+                <div class="login-field">
                     <label for="password" class="form-label">Senha</label>
                     <input type="password" class="form-control" id="password" name="password" required
                            placeholder="Digite sua senha">
                 </div>
 
-                <!-- Mensagens de erro aparecem aqui, após o campo de senha -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mb-4" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
 
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-login" id="loginBtn">
-                        <span class="login-text">Entrar</span>
-                        <div class="spinner-border spinner-border-sm loading ms-2" role="status">
-                            <span class="visually-hidden">Carregando...</span>
-                        </div>
-                    </button>
-                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <i data-lucide="log-in"></i>
+                    <span class="login-text">Entrar</span>
+                    <div class="loading" role="status">
+                        <i data-lucide="loader-2"></i>
+                    </div>
+                </button>
             </form>
 
-            <div class="text-center mt-4">
-                <small class="text-muted">
+            <div class="login-footer">
+                <small>
+                    <i data-lucide="help-circle" style="width: 14px; height: 14px; margin-right: 4px;"></i>
                     Problemas para acessar? Entre em contato com o administrador.
                 </small>
             </div>
@@ -75,6 +65,7 @@
             loginText.textContent = 'Autenticando...';
             loading.classList.add('show');
             loginBtn.disabled = true;
+            loginBtn.classList.add('ui-btn--loading');
 
             try {
                 const response = await fetch('/api/login', {
@@ -102,6 +93,7 @@
                 loginText.textContent = 'Entrar';
                 loading.classList.remove('show');
                 loginBtn.disabled = false;
+                loginBtn.classList.remove('ui-btn--loading');
             }
         });
 
@@ -110,17 +102,29 @@
             const existingAlerts = document.querySelectorAll('.alert');
             existingAlerts.forEach(alert => alert.remove());
 
-            // Criar novo alerta
+            // Criar novo alerta com ícone
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-danger alert-dismissible fade show';
             alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert-icon">
+                    <i data-lucide="alert-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-message">${message}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <i data-lucide="x"></i>
+                </button>
             `;
 
-            // Inserir antes do formulário
-            const form = document.getElementById('loginForm');
-            form.parentNode.insertBefore(alertDiv, form);
+            // Inserir antes do botão de login
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.parentNode.insertBefore(alertDiv, loginBtn);
+
+            // Inicializar ícones Lucide
+            if (typeof refreshIcons === 'function') {
+                refreshIcons();
+            }
 
             // Auto-remover após 5 segundos
             setTimeout(() => {

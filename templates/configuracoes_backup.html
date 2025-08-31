@@ -457,25 +457,29 @@ function loadUsers() {
 
             // Limpar tabela
             usersTableBody.innerHTML = '';
+            console.log('🧹 Tabela limpa');
 
-
+            console.log('👥 Usuários encontrados:', data.users.length);
+            console.log('📋 Lista de usuários:', data.users);
 
             // Adicionar usuários
-            data.users.forEach((user) => {
+            data.users.forEach((user, index) => {
+                console.log(`👤 Processando usuário ${index + 1}:`, user);
                 const row = document.createElement('tr');
 
                 // Criar células
                 const emailCell = document.createElement('td');
                 emailCell.textContent = user.email;
 
-                // Verificar se é o email protegido
-                const protectedEmail = 'leandro.albertini@assertivasolucoes.com.br';
-                const isProtected = user.email === protectedEmail;
-
                 const roleCell = document.createElement('td');
                 const roleBadge = document.createElement('span');
                 roleBadge.className = `badge ${user.role === 'admin' ? 'badge--primary' : 'badge--secondary'}`;
                 roleBadge.textContent = user.role === 'admin' ? 'Administrador' : 'Usuário';
+
+                // Verificar se é o email protegido
+                const protectedEmail = 'leandro.albertini@assertivasolucoes.com.br';
+                const isProtected = user.email === protectedEmail;
+                console.log(`🛡️ Usuário ${user.email} protegido:`, isProtected);
 
                 if (isProtected) {
                     roleBadge.style.cursor = 'default';
@@ -501,6 +505,10 @@ function loadUsers() {
                 dateCell.textContent = new Date(user.createdAt).toLocaleDateString('pt-BR');
 
                 const actionsCell = document.createElement('td');
+
+                // Verificar se é o email protegido
+                const protectedEmail = 'leandro.albertini@assertivasolucoes.com.br';
+                const isProtected = user.email === protectedEmail;
 
                 if (isProtected) {
                     // Mostrar ícone de proteção em vez do botão de excluir
@@ -532,6 +540,8 @@ function loadUsers() {
                 row.appendChild(actionsCell);
 
                 usersTableBody.appendChild(row);
+                console.log(`✅ Linha ${index + 1} adicionada para usuário:`, user.email);
+                console.log('📋 DOM da linha:', row.outerHTML.substring(0, 200) + '...');
             });
 
             // Reinicializar ícones Lucide após adicionar o HTML
@@ -721,16 +731,37 @@ async function confirmDelete() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Aguardar o Lucide carregar antes de inicializar
-    setTimeout(() => {
-        // Inicializar ícones
-        if (typeof refreshIcons === 'function') {
-            refreshIcons();
-        }
+    console.log('🚀 Configurações: DOMContentLoaded');
 
-        // Carregar usuários automaticamente ao abrir a página
-        loadUsers();
-    }, 500);
+    // Verificar se elementos existem
+    const usersList = document.getElementById('usersList');
+    const usersLoading = document.getElementById('usersLoading');
+    const usersEmpty = document.getElementById('usersEmpty');
+    const usersTableBody = document.getElementById('usersTableBody');
+
+    console.log('📋 Elementos encontrados:', {
+        usersList: !!usersList,
+        usersLoading: !!usersLoading,
+        usersEmpty: !!usersEmpty,
+        usersTableBody: !!usersTableBody
+    });
+
+    // Aguardar o Lucide carregar antes de inicializar
+    if (typeof waitForLucide === 'function') {
+        waitForLucide(() => {
+            // Inicializar ícones
+            refreshIcons();
+
+            // Carregar usuários automaticamente ao abrir a página
+            loadUsers();
+        });
+    } else {
+        // Fallback se waitForLucide não estiver disponível
+        setTimeout(() => {
+            refreshIcons();
+            loadUsers();
+        }, 300);
+    }
 
     // Submissão do formulário
     document.getElementById('formConvite').addEventListener('submit', function(e) {
@@ -763,7 +794,80 @@ function carregarUsuariosFinal() {
 // Tornar a função global
 window.carregarUsuariosFinal = carregarUsuariosFinal;
 
+// Função de teste para debug
+window.testModal = function() {
+    console.log('🧪 Testando modal...');
+    const modal = document.getElementById('deleteModal');
+    console.log('Modal encontrado:', !!modal);
+    if (modal) {
+        modal.style.display = 'flex';
+        console.log('✅ Modal exibido para teste');
+    } else {
+        console.error('❌ Modal não encontrado!');
+    }
+};
 
+// Função de teste para API
+window.testAPI = function() {
+    console.log('🧪 Testando API de usuários...');
+    fetch('/api/users', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('📡 Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('📊 API Data:', data);
+    })
+    .catch(error => {
+        console.error('❌ API Error:', error);
+    });
+};
+
+// Função simplificada para debug
+window.loadUsersSimple = function() {
+    console.log('🔧 loadUsersSimple() chamada');
+
+    const usersTableBody = document.getElementById('usersTableBody');
+    if (!usersTableBody) {
+        console.error('❌ usersTableBody não encontrado!');
+        return;
+    }
+
+    // Limpar tabela
+    usersTableBody.innerHTML = '';
+
+    // Adicionar uma linha de teste
+    const testRow = document.createElement('tr');
+    testRow.innerHTML = `
+        <td>teste@exemplo.com</td>
+        <td><span class="badge badge--primary">Administrador</span></td>
+        <td><span class="status-badge status-badge--active"><i data-lucide="check-circle"></i> Ativo</span></td>
+        <td>30/08/2025</td>
+        <td><button class="ui-btn ui-btn--xs ui-btn--danger"><i data-lucide="trash-2"></i></button></td>
+    `;
+
+    usersTableBody.appendChild(testRow);
+    console.log('✅ Linha de teste adicionada');
+
+    // Mostrar tabela
+    const usersList = document.getElementById('usersList');
+    if (usersList) {
+        usersList.style.display = 'block';
+        console.log('✅ Tabela exibida');
+    }
+
+    // Inicializar ícones
+    if (typeof refreshIcons === 'function') {
+        refreshIcons();
+        console.log('✅ Ícones inicializados');
+    }
+};
 
 // Fechar modal ao clicar fora dele
 document.addEventListener('click', function(event) {

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Lucide - Ícones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .status {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Ícones Lucide</h1>
+        
+        <div class="user-row">
+            <span>usuario1@teste.com</span>
+            <span class="status">Ativo</span>
+            <button class="btn btn-danger" onclick="excluirUsuario('usuario1@teste.com')">
+                <i data-lucide="trash-2"></i>
+                Excluir
+            </button>
+        </div>
+        
+        <div class="user-row">
+            <span>usuario2@teste.com</span>
+            <span class="status">Ativo</span>
+            <button class="btn btn-danger" onclick="excluirUsuario('usuario2@teste.com')">
+                <i data-lucide="trash-2"></i>
+                Excluir
+            </button>
+        </div>
+        
+        <div class="user-row">
+            <span>usuario3@teste.com</span>
+            <span class="status">Ativo</span>
+            <button class="btn btn-danger" onclick="excluirUsuario('usuario3@teste.com')">
+                <i data-lucide="trash-2"></i>
+                Excluir
+            </button>
+        </div>
+        
+        <hr>
+        
+        <h3>Outros Ícones de Teste:</h3>
+        <button class="btn btn-primary">
+            <i data-lucide="plus"></i>
+            Adicionar
+        </button>
+        
+        <button class="btn btn-success">
+            <i data-lucide="check"></i>
+            Confirmar
+        </button>
+        
+        <button class="btn btn-primary">
+            <i data-lucide="edit"></i>
+            Editar
+        </button>
+        
+        <button class="btn btn-primary">
+            <i data-lucide="copy"></i>
+            Copiar
+        </button>
+        
+        <hr>
+        
+        <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 20px;">
+            <h4>Log de Carregamento:</h4>
+            <div id="logContent"></div>
+        </div>
+    </div>
+
+    <!-- Carregar Lucide Local -->
+    <script src="/static/js/lucide.min.js"></script>
+    
+    <script>
+        function log(message) {
+            const logContent = document.getElementById('logContent');
+            const time = new Date().toLocaleTimeString();
+            logContent.innerHTML += `<div>[${time}] ${message}</div>`;
+            console.log(message);
+        }
+        
+        function excluirUsuario(email) {
+            if (confirm(`Tem certeza que deseja excluir ${email}?`)) {
+                alert(`Usuário ${email} excluído!`);
+            }
+        }
+        
+        // Verificar carregamento do Lucide
+        document.addEventListener('DOMContentLoaded', function() {
+            log('✅ DOM carregado');
+            
+            // Função para verificar e inicializar Lucide
+            function initLucide() {
+                if (window.lucide && window.lucide.createIcons) {
+                    window.lucide.createIcons();
+                    log('✅ Lucide carregado e ícones criados');
+                    
+                    // Verificar se os ícones foram renderizados
+                    setTimeout(() => {
+                        const icones = document.querySelectorAll('[data-lucide] svg');
+                        log(`📊 Total de ícones renderizados: ${icones.length}`);
+                        
+                        if (icones.length === 0) {
+                            log('❌ Nenhum ícone foi renderizado!');
+                        }
+                    }, 100);
+                } else {
+                    log('❌ Lucide não disponível');
+                }
+            }
+            
+            // Tentar inicializar imediatamente
+            initLucide();
+            
+            // Tentar novamente após um delay
+            setTimeout(initLucide, 100);
+            setTimeout(initLucide, 500);
+            setTimeout(initLucide, 1000);
+        });
+    </script>
+</body>
+</html>

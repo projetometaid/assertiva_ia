@@ -7,7 +7,7 @@ from config.settings import IS_PRODUCTION
 def set_cookie(response, name, value, max_age, secure=None):
     """
     Define cookie com configurações condicionais de segurança
-    
+
     Args:
         response: Flask response object
         name: Nome do cookie
@@ -16,14 +16,15 @@ def set_cookie(response, name, value, max_age, secure=None):
         secure: Se None, usa IS_PRODUCTION
     """
     if secure is None:
-        secure = IS_PRODUCTION
-    
+        # Temporariamente forçar False para permitir HTTP
+        secure = False  # IS_PRODUCTION
+
     response.set_cookie(
-        name, 
-        value, 
-        max_age=max_age, 
-        httponly=True, 
-        secure=secure, 
+        name,
+        value,
+        max_age=max_age,
+        httponly=True,
+        secure=secure,
         samesite='Lax'
     )
 
