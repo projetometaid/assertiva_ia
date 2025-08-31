@@ -1766,7 +1766,7 @@ body {
 
 /* === MOBILE TOGGLE === */
 .mobile-toggle {
-  display: none;
+  display: none; /* Hidden by default - only show on mobile */
   position: fixed;
   top: 1rem;
   left: 1rem;
@@ -1780,7 +1780,6 @@ body {
   box-shadow: 0 4px 20px rgba(0,0,0,.15);
   transition: all 0.3s ease;
   cursor: pointer;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -1794,15 +1793,31 @@ body {
   transform: scale(0.95);
 }
 
+.mobile-toggle:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
 /* Animação do ícone hambúrguer */
 .mobile-toggle .lucide-icon,
 .mobile-toggle .fallback-icon {
   transition: transform 0.3s ease;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.5;
 }
 
 .mobile-toggle.active .lucide-icon,
 .mobile-toggle.active .fallback-icon {
   transform: rotate(90deg);
+}
+
+/* Garantir que o SVG seja visível */
+.mobile-toggle svg {
+  color: white;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.5;
 }
 
 /* Overlay para mobile */
@@ -1976,10 +1991,10 @@ body {
   }
 }
 
-/* === TABLET PORTRAIT (481px - 767px) === */
-@media (max-width: 767px) and (min-width: 481px) {
+/* === MOBILE & TABLET (até 767px) === */
+@media (max-width: 767px) {
   .mobile-toggle {
-    display: flex !important;
+    display: flex !important; /* Show only on mobile/tablet */
   }
 
   .sidebar {
@@ -2053,15 +2068,7 @@ body {
   }
 }
 
-/* === MOBILE (320px - 480px) === */
-@media (max-width: 480px) {
-  .mobile-toggle {
-    display: flex !important;
-    top: 1rem;
-    left: 1rem;
-    width: 44px;
-    height: 44px;
-  }
+/* === MOBILE (incluído na media query acima) === */
 
   .sidebar {
     transform: translateX(-100%) !important;
@@ -2826,4 +2833,15 @@ h1 i, h2 i, h3 i {
 .ui-btn .fallback-icon {
   font-size: 16px;
   margin-right: .5rem;
+}
+
+/* === DESKTOP - HIDE MOBILE TOGGLE === */
+@media (min-width: 768px) {
+  .mobile-toggle {
+    display: none !important; /* Force hide hamburger on desktop */
+  }
+
+  .sidebar-overlay {
+    display: none !important; /* Force hide overlay on desktop */
+  }
 }
