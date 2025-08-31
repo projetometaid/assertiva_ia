@@ -1764,7 +1764,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* === MOBILE === */
+/* === MOBILE TOGGLE === */
 .mobile-toggle {
   display: none;
   position: fixed;
@@ -1774,9 +1774,55 @@ body {
   background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%);
   color: #fff;
   border: none;
-  padding: .5rem .75rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(0,0,0,.2);
+}
+
+.mobile-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Animação do ícone hambúrguer */
+.mobile-toggle .lucide-icon,
+.mobile-toggle .fallback-icon {
+  transition: transform 0.3s ease;
+}
+
+.mobile-toggle.active .lucide-icon,
+.mobile-toggle.active .fallback-icon {
+  transform: rotate(90deg);
+}
+
+/* Overlay para mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ===== PÁGINA DE CONVITE/DEFINIR SENHA ===== */
@@ -1933,26 +1979,29 @@ body {
 /* === TABLET PORTRAIT (481px - 767px) === */
 @media (max-width: 767px) and (min-width: 481px) {
   .mobile-toggle {
-    display: block;
+    display: flex !important;
   }
 
   .sidebar {
-    transform: translateX(0) !important;
-    width: 250px !important;
+    transform: translateX(-100%) !important;
+    width: 280px !important;
     transition: transform 0.3s ease;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
   }
 
   .sidebar.show {
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
 
   .main-content {
     margin-left: 0;
     max-width: 100vw;
+    padding-top: 80px;
   }
 
   .content-inner {
     padding: var(--space-4);
+    padding-top: 80px;
   }
 
   .ui-card {
@@ -1984,6 +2033,21 @@ body {
     padding: var(--space-4);
   }
 
+  /* Melhorias para formulários em tablet */
+  .form-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .ui-input {
+    min-height: 48px;
+    font-size: 16px; /* Previne zoom no iOS */
+  }
+
+  .ui-textarea {
+    min-height: 120px;
+    font-size: 16px;
+  }
+
   .response-card {
     border-radius: var(--radius-lg);
   }
@@ -1992,28 +2056,33 @@ body {
 /* === MOBILE (320px - 480px) === */
 @media (max-width: 480px) {
   .mobile-toggle {
-    display: block;
-    top: var(--space-4);
-    left: var(--space-4);
+    display: flex !important;
+    top: 1rem;
+    left: 1rem;
+    width: 44px;
+    height: 44px;
   }
 
   .sidebar {
-    transform: translateX(0) !important;
-    width: 250px !important;
+    transform: translateX(-100%) !important;
+    width: 280px !important;
     transition: transform 0.3s ease;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
   }
 
   .sidebar.show {
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
 
   .main-content {
     margin-left: 0;
     max-width: 100vw;
+    padding-top: 80px;
   }
 
   .content-inner {
     padding: var(--space-3);
+    padding-top: 80px;
   }
 
   .ui-card {
@@ -2039,6 +2108,41 @@ body {
 
   .ui-btn--lg {
     min-height: 56px;
+  }
+
+  /* Melhorias específicas para mobile */
+  .form-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .ui-input, .ui-textarea {
+    font-size: 16px; /* Previne zoom no iOS */
+    border-radius: var(--radius-md);
+  }
+
+  .ui-input {
+    min-height: 52px;
+  }
+
+  .ui-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  /* Tabelas responsivas */
+  .table-responsive {
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+  }
+
+  .table {
+    font-size: var(--font-size-sm);
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-2) var(--space-3);
+    white-space: nowrap;
   }
 
   .ui-actions {
@@ -2112,6 +2216,44 @@ body {
     max-width: 95vw;
     max-height: 95vh;
     margin: var(--space-2);
+  }
+}
+
+/* === MOBILE EXTRA SMALL (até 360px) === */
+@media (max-width: 360px) {
+  .mobile-toggle {
+    width: 40px;
+    height: 40px;
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .sidebar {
+    width: 260px !important;
+  }
+
+  .content-inner {
+    padding: var(--space-2);
+    padding-top: 70px;
+  }
+
+  .ui-card__body {
+    padding: var(--space-3);
+  }
+
+  .ui-btn {
+    min-height: 48px;
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-input {
+    min-height: 48px;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
   }
 }
 

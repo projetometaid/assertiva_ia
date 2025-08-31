@@ -1,10 +1,57 @@
 /* app.js - JavaScript global do Sistema Assertiva */
 
-// === SIDEBAR TOGGLE DESABILITADO ===
+// === SIDEBAR TOGGLE RESPONSIVO ===
 function toggleSidebar() {
-    console.log('🚫 Toggle da sidebar foi DESABILITADO para manter sempre visível');
-    // Função desabilitada - sidebar sempre expandida
-    return false;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+
+    if (!sidebar) return;
+
+    // Em desktop, manter sempre visível
+    if (window.innerWidth > 768) {
+        console.log('🖥️ Desktop: Sidebar sempre visível');
+        return false;
+    }
+
+    // Em mobile/tablet, alternar visibilidade
+    const isOpen = sidebar.classList.contains('show');
+
+    if (isOpen) {
+        closeSidebar();
+    } else {
+        openSidebar();
+    }
+}
+
+function openSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+
+    if (sidebar) sidebar.classList.add('show');
+    if (overlay) overlay.classList.add('show');
+    if (toggle) toggle.classList.add('active');
+
+    // Prevenir scroll do body
+    document.body.style.overflow = 'hidden';
+
+    console.log('📱 Mobile: Sidebar aberta');
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('sidebarToggle');
+
+    if (sidebar) sidebar.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
+    if (toggle) toggle.classList.remove('active');
+
+    // Restaurar scroll do body
+    document.body.style.overflow = '';
+
+    console.log('📱 Mobile: Sidebar fechada');
 }
 
 // Função para expandir sidebar automaticamente quando clicar em item do menu
@@ -24,13 +71,33 @@ document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('sidebar');
         const mobileToggle = document.querySelector('.mobile-toggle');
 
-        if (sidebar && mobileToggle && 
-            !sidebar.contains(event.target) && 
+        if (sidebar && mobileToggle &&
+            sidebar.classList.contains('show') &&
+            !sidebar.contains(event.target) &&
             !mobileToggle.contains(event.target)) {
-            sidebar.classList.remove('show');
+            closeSidebar();
         }
     }
 });
+
+// Fechar sidebar ao pressionar ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && window.innerWidth <= 768) {
+        closeSidebar();
+    }
+});
+
+// Fechar sidebar ao clicar em links de navegação no mobile
+function setupMobileNavigation() {
+    const navLinks = document.querySelectorAll('.sidebar .nav-link:not(.logout-link)');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                setTimeout(() => closeSidebar(), 150);
+            }
+        });
+    });
+}
 
 // === LOGOUT FUNCTION ===
 function fazerLogout() {
@@ -121,15 +188,20 @@ if (window.history && window.history.pushState) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Sistema Assertiva carregado');
 
-    // Event listeners do toggle foram REMOVIDOS para manter sidebar sempre visível
-    console.log('🚫 Event listeners do toggle foram DESABILITADOS');
-    console.log('✅ Sidebar permanecerá sempre expandida');
+    // Configurar navegação mobile responsiva
+    setupMobileNavigation();
 
-    // Adicionar event listeners para expandir sidebar ao clicar em itens do menu
-    const navLinks = document.querySelectorAll('.sidebar .nav-link:not(.logout-link):not(.nav-link-disabled)');
-    navLinks.forEach(link => {
-        link.addEventListener('click', expandSidebarOnNavClick);
+    // Detectar mudanças de orientação/redimensionamento
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            // Em desktop, garantir que sidebar esteja sempre visível
+            closeSidebar();
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) sidebar.classList.remove('show');
+        }
     });
+
+    console.log('✅ Sistema de navegação responsiva configurado');
 
     // Init Lucide - removido para evitar conflito com base.html
     // A inicialização do Lucide agora é feita apenas no base.html
